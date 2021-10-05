@@ -43,7 +43,4 @@ public class Controls {
         left_back_power = forward + (clockwise - right);
         right_back_power = forward - (clockwise + right);
     }
-
-    // Verification functions that run along with the TeleOp that enforces ruling of our control protocol
-    // For example, enforcing that one joystick only controls one function of the robot, etc.
 }
