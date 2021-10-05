@@ -12,7 +12,6 @@ import java.util.Arrays;
  *
  * Note: time is always in seconds and is represented by a double for 8-bit precision.
  */
-@Autonomous(name="Drivetrain", group="")
 public class Drivetrain {
     DcMotor left_front, right_front, left_back, right_back;
     List<DcMotor> motors;
@@ -94,12 +93,58 @@ public class Drivetrain {
         return 0;
     }
 
-    public int strafe_right() {
-        return 0;
+    public int strafe_right(double power, double time) {
+        fl = power;
+        fr = -power;
+        bl = -power;
+        br = power;
+
+        frontLeft.setPower(fl);
+        frontRight.setPower(fr);
+        backLeft.setPower(bl);
+        backRight.setPower(br);
+
+        sleep(time * 1000);
+
+        for (DcMotor m : motors) {
+            m.setPower(0);
+        }
     }
 
-    public int strafe_left() {
-        return 0;
+    public int strafe_left(double power, double time) {
+        fl = -power;
+        fr = power;
+        bl = power;
+        br = -power;
+
+        frontLeft.setPower(fl);
+        frontRight.setPower(fr);
+        backLeft.setPower(bl);
+        backRight.setPower(br);
+
+        sleep(time * 1000);
+
+        for (DcMotor m : motors) {
+            m.setPower(0);
+        }
+    }
+
+    public int move_with_coords(double x, double y, double rot, double power, double time) {
+        fl = y - (clockwise - x);
+        fr = y + clockwise + x;
+        bl = y - (clockwise + x);
+        br = y + (clockwise - x);
+
+        frontLeft.setPower(power * fl);
+        frontRight.setPower(power * fr);
+        backLeft.setPower(power * bl);
+        backRight.setPower(power * br);
+
+        sleep(time * 1000);
+
+        for (DcMotor m : motors) {
+            m.setPower(0);
+        }
     }
 
     void reverse() {
@@ -107,5 +152,9 @@ public class Drivetrain {
             m.setDirection(DcMotor.Direction.REVERSE);
         }
     }
+
+    // Add rotation while moving, but only after proper encoder distance calibration is calculated.
+    // Want to be able to correctly move the robot by distance instead of power output and time.
+    // When that is achieved, rotation can be implemented along with distance.
 }
 
