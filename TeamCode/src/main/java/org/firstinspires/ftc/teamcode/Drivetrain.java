@@ -129,7 +129,7 @@ public class Drivetrain {
         }
     }
 
-    public int move_with_coords(double x, double y, double rot, double power, double time) {
+    public int move_with_params(double x, double y, double rot, double power, double time) {
         fl = y - (clockwise - x);
         fr = y + clockwise + x;
         bl = y - (clockwise + x);
@@ -145,6 +145,10 @@ public class Drivetrain {
         for (DcMotor m : motors) {
             m.setPower(0);
         }
+    }
+
+    public int move_with_coords(double x, double y, double rot, double power, double time) {
+        // implement after localization is perfecto 
     }
 
     void reverse() {
