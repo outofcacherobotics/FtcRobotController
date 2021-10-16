@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import static org.junit.Assert.*;
 
 public class Status {
     private final String API_URL = "https://api.outofcacherobotics.com/robot";
@@ -14,7 +15,7 @@ public class Status {
 
     public Status() {
         this.client = HttpClient.newHttpClient();
-        this.robotOn = false;
+        this.robotOn = this.getRobotStatus();
     }
 
     public boolean getRobotOn() {
@@ -69,5 +70,23 @@ public class Status {
         if (!(statusCode >= 200 && statusCode <= 299)) {
             throw new Error("request failed");
         }
+    }
+}
+
+@Test
+class StatusTest {
+    public void TestStartRobot() {
+        Status status = new Status();
+        assertEquals(false, status.getRobotOn());
+        status.startRobot();
+        assertEquals(true, status.getRobotOn());
+    }
+
+    public void TestStopRobot() {
+        Status status = new Status();
+        assertEquals(false, status.getRobotOn());
+        status.startRobot();
+        status.startRobot();
+        assertEquals(false, status.getRobotOn());
     }
 }
