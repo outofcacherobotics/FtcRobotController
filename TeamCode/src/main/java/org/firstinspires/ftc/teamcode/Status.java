@@ -8,8 +8,8 @@ import java.net.http.HttpRequest;
 import static org.junit.Assert.*;
 
 public class Status {
-    private final String API_URL = "https://api.outofcacherobotics.com/robot";
-    private String API_KEY = System.getenv("outofcache_api_key")
+    private final String API_URL = "https://us-central1-robotics-api.cloudfunctions.net";
+    private String API_KEY = System.getenv("outofcache_api_key");
     private HttpClient client = null;
     private boolean robotOn;
 
