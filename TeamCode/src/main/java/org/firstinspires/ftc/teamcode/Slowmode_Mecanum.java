@@ -6,57 +6,35 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp
 public class Simple_Mecanum extends LinearOpMode {
-
-    private DcMotor frontLeft;
-    private DcMotor backLeft;
-    private DcMotor frontRight;
-    private DcMotor backRight;
+    private Drivetrain drivetrain;
+    private Controls controls;
 
     @Override
     public void runOpMode() {
-        float x;
-        float y;
-        float clockwise;
-        double fl;
-        double fr;
-        double bl;
-        double br;
+        this.drivetrain = new Drivetrain(
+            "frontLeft",
+            "frontRight",
+            "backLeft",
+            "backRight",
+        );
 
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
+        this.controls = new Controls(
+            gamepad1, 
+            drivetrain.getFrontLeftMotor(),
+            drivetrain.getFrontRightMotor(),
+            drivetrain.getBackLeftMotor(),
+            drivetrain.getFrontLeftMotor(),
+        );
 
         waitForStart();
         if (opModeIsActive()) {
-            frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             while (opModeIsActive()) {
-                x = gamepad1.left_stick_x;
-                y = gamepad1.left_stick_y;
-
-                clockwise = gamepad1.right_stick_x;
-
-                if (gamepad1.right_bumper) {
-                    fl = (y - x - clockwise)/2;
-                    fr = (y - x + clockwise)/2;
-                    bl = (y + x - clockwise)/2;
-                    br = (y + x + clockwise)/2;
-                } else {
-                    fl = y - x - clockwise;
-                    fr = y - x + clockwise;
-                    bl = y + x - clockwise;
-                    br = y + x + clockwise;
-                }
+                controls.updateSlowmode();
                 
-                frontLeft.setPower(fl);
-                frontRight.setPower(fr);
-                backLeft.setPower(bl);
-                backRight.setPower(br);
+                this.drivetrain.directSetLeftFrontPower(fl);
+                this.drivetrain.directSetRightFrontPower(fr);
+                this.drivetrain.directSetLeftBackPower(bl);
+                this.drivetrain.directSetRightBackPower(br);
 
                 telemetry.update();
             }

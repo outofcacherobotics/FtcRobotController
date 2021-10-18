@@ -6,20 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp
 public class Simple_Mecanum extends LinearOpMode {
-    private DcMotor left_front_motor, right_front_motor, left_back_motor, right_back_motor;
-    private Controls controls;
     private Drivetrain drivetrain;
+    private Controls controls;
 
     @Override
     public void runOpMode() {
-        this.controls = new Controls(
-            gamepad1, 
-            left_front_motor,
-            right_front_motor,
-            left_back_motor,
-            right_back_motor,
-        );
-
         this.drivetrain = new Drivetrain(
             "frontLeft",
             "frontRight",
@@ -27,11 +18,19 @@ public class Simple_Mecanum extends LinearOpMode {
             "backRight",
         );
 
+        this.controls = new Controls(
+            gamepad1, 
+            drivetrain.getFrontLeftMotor(),
+            drivetrain.getFrontRightMotor(),
+            drivetrain.getBackLeftMotor(),
+            drivetrain.getFrontLeftMotor(),
+        );
+
         waitForStart();
         if (opModeIsActive()) {
             controls.setPowerBehavior();
             while (opModeIsActive()) {
-                controls.update()
+                controls.updateSimple()
 
                 this.drivetrain.directSetLeftFrontPower(controls.getLeftFrontPower());
                 this.drivetrain.directSetRightFrontPower(controls.getRightFrontPower());

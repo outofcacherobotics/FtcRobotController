@@ -55,7 +55,7 @@ public class AutoControls {
         return right_back_power;
     }
 
-    public void update() {
+    public void updateSimple() {
         x = gamepad.left_stick_x;
         y = gamepad.left_stick_y;
         clockwise = gamepad.right_stick_x;
@@ -68,4 +68,6 @@ public class AutoControls {
         left_back_power = forward + (clockwise - right);
         right_back_power = forward - (clockwise + right);
     }
+
+    public void updateSlowmode()
 }

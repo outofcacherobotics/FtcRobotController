@@ -57,6 +57,14 @@ public class Drivetrain {
         return 0 < power && power < MAX_POWER;
     }
 
+    public DcMotor getFrontLeftMotor() { return this.left_front };
+
+    public DcMotor getFrontRightMotor() { return this.right_front };
+
+    public DcMotor getBackLeftMotor() { return this.left_back };
+
+    public DcMotor getFrontLeftMotor() { return this.right_back };
+
     public void directSetLeftFrontPower(double power) { this.left_front.setPower(power) };
 
     public void directSetRightFrontPower(double power) { this.left_front.setPower(power) };
