@@ -27,10 +27,13 @@ public class Drivetrain {
         telemetry.addData("Initializing drivetrain...");
         telemetry.update();
 
-        left_front = hardwareMap.get(DcMotor.class, left_front_name);
-        right_front = hardwareMap.get(DcMotor.class, right_front_name);
-        left_back = hardwareMap.get(DcMotor.class, left_back_name);
-        right_back = hardwareMap.get(DcMotor.class, right_back_name);
+        this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
+        this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
+        this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
+        this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
+
+        this.right_front.setDirection(DcMotor.Direction.REVERSE);
+        this.right_back.setDirection(DcMotor.Direction.REVERSE);
 
         DcMotor[] motorArray = {left_front, right_front, left_back, right_back};
         motors = Arrays.asList<DcMotor>(motorArray);
@@ -53,6 +56,14 @@ public class Drivetrain {
     private boolean valid_power(double power) {
         return 0 < power && power < MAX_POWER;
     }
+
+    public void directSetLeftFrontPower(double power) { this.left_front.setPower(power) };
+
+    public void directSetRightFrontPower(double power) { this.left_front.setPower(power) };
+
+    public void directSetLeftBackPower(double power) { this.left_front.setPower(power) };
+
+    public void directSetRightBackPower(double power) { this.left_front.setPower(power) };
 
     public int forward(double power, double time) {
         if (!this.valid_power(power)) {
