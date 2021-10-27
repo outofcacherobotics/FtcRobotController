@@ -13,7 +13,11 @@ import java.util.Arrays;
  * Note: time is always in seconds and is represented by a double for 8-bit precision.
  */
 public class Drivetrain {
-    DcMotor left_front, right_front, left_back, right_back;
+    DcMotor left_front;
+    DcMotor right_front;
+    DcMotor left_back;
+    DcMotor right_back;
+
     List<DcMotor> motors;
     double left_front_power, right_front_power, left_back_power, right_back_power = 0;
     double MAX_POWER = 1.0;
@@ -22,7 +26,7 @@ public class Drivetrain {
             String left_front_name,
             String right_front_name,
             String left_back_name,
-            String right_back_name
+            String right_back_name,
     ) {
         telemetry.addData("Initializing drivetrain...");
         telemetry.update();
@@ -31,6 +35,9 @@ public class Drivetrain {
         right_front = hardwareMap.get(DcMotor.class, right_front_name);
         left_back = hardwareMap.get(DcMotor.class, left_back_name);
         right_back = hardwareMap.get(DcMotor.class, right_back_name);
+
+        right_front.setDirection(DcMotor.Direction.REVERSE);
+        right_back.setDirection(DcMotor.Direction.REVERSE);
 
         DcMotor[] motorArray = {left_front, right_front, left_back, right_back};
         motors = Arrays.asList<DcMotor>(motorArray);
@@ -147,14 +154,37 @@ public class Drivetrain {
         }
     }
 
-    public int move_with_coords(double x, double y, double rot, double power, double time) {
-        // implement after localization is perfecto 
+    public int moveWithCoords(double x, double y, double rot, double power, double time) {
+        // implement after localization is perfecto
+        return 0;
     }
 
-    void reverse() {
-        for (DcMotor m : motors) {
-            m.setDirection(DcMotor.Direction.REVERSE);
-        }
+    public DcMotor getLeftFront() {
+        return left_front;
+    }
+
+    public DcMotor getRightFront() {
+        return right_front;
+    }
+
+    public DcMotor getLeftBack() {
+        return left_back;
+    }
+
+    public DcMotor getRightBack() {
+        return right_back;
+    }
+
+    public void setAllMotors(
+            double left_front_power,
+            double right_front_power,
+            double left_back_power,
+            double right_back_power,
+            ) {
+        left_front_motor.setPower(left_front_power);
+        right_front_motor.setPower(right_front_power);
+        left_back_motor.setPower(left_back_power);
+        right_back_motor.setPower(right_back_power);
     }
 
     // Add rotation while moving, but only after proper encoder distance calibration is calculated.

@@ -8,19 +8,21 @@ public class Controls {
 
     public Controls(Gamepad gamepad) {
         this.gamepad = gamepad;
-        left_front_power = 0;
-        right_front_power = 0;
-        left_back_power = 0;
-        right_back_power = 0;
-        motor_enabled = false;
+
+        this.left_front_power = 0;
+        this.right_front_power = 0;
+        this.left_back_power = 0;
+        this.right_back_power = 0;
+
+        this.motor_enabled = false;
     }
 
     public Controls(
         Gamepad gamepad,
-        left_front_motor DcMotor,
-        right_front_motor DcMotor,
-        left_back_motor DcMotor,
-        right_back_motor DcMotor,
+        DcMotor left_front_motor,
+        DcMotor right_front_motor,
+        DcMotor left_back_motor,
+        DcMotor right_back_motor
     ) {
         this.gamepad = gamepad;
         
@@ -39,7 +41,7 @@ public class Controls {
 
     public void setPowerBehavior() {
         if (!this.motor_enabled) {
-            return
+            return;
         }
 
         left_front_power.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
