@@ -69,5 +69,22 @@ public class AutoControls {
         right_back_power = forward - (clockwise + right);
     }
 
-    public void updateSlowmode()
+    public void updateSlowmode() {
+        x = gamepad1.left_stick_x;
+        y = gamepad1.left_stick_y;
+
+        clockwise = gamepad1.right_stick_x;
+
+        if (gamepad1.right_bumper) {
+            fl = (y - x - clockwise)/2;
+            fr = (y - x + clockwise)/2;
+            bl = (y + x - clockwise)/2;
+            br = (y + x + clockwise)/2;
+        } else {
+            fl = y - x - clockwise;
+            fr = y - x + clockwise;
+            bl = y + x - clockwise;
+            br = y + x + clockwise;
+        }
+    }
 }
