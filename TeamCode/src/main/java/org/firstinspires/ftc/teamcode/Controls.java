@@ -51,14 +51,22 @@ public class Controls {
     }
 
     public void update() {
-        x = gamepad.left_stick_x;
-        y = gamepad.left_stick_y;
-        clockwise = gamepad.right_stick_x;
+        x = gamepad1.left_stick_x;
+        y = gamepad1.left_stick_y;
 
-        self.left_front_power = y - clockwise - x;
-        self.right_front_power = y + clockwise - x;
-        self.left_back_power = y - clockwise + x;
-        self.right_back_power = y + clockwise + x;
+        clockwise = gamepad1.right_stick_x;
+
+        if (gamepad1.right_bumper) {
+            fl = (y - x - clockwise)/2;
+            fr = (y - x + clockwise)/2;
+            bl = (y + x - clockwise)/2;
+            br = (y + x + clockwise)/2;
+        } else {
+            fl = y - x - clockwise;
+            fr = y - x + clockwise;
+            bl = y + x - clockwise;
+            br = y + x + clockwise;
+        }
     }
 
     public double getLeftFrontPower() { return left_front_power; }
