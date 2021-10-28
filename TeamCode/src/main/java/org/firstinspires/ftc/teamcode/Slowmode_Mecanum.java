@@ -1,8 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+package main.java.org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import main.java.org.firstinspires.ftc.teamcode.Controls;
+import main.java.org.firstinspires.ftc.teamcode.Drivetrain;
 
 @TeleOp
 public class Simple_Mecanum extends LinearOpMode {
@@ -19,7 +22,8 @@ public class Simple_Mecanum extends LinearOpMode {
         );
 
         this.controls = new Controls(
-            gamepad1, 
+            gamepad1,
+            "slowmode",
             drivetrain.getFrontLeftMotor(),
             drivetrain.getFrontRightMotor(),
             drivetrain.getBackLeftMotor(),
@@ -29,7 +33,7 @@ public class Simple_Mecanum extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                controls.updateSlowmode();
+                controls.update();
                 
                 this.drivetrain.directSetLeftFrontPower(fl);
                 this.drivetrain.directSetRightFrontPower(fr);

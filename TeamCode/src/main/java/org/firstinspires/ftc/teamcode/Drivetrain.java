@@ -3,6 +3,7 @@ package main.java.org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.Arrays;
 
@@ -23,10 +24,11 @@ public class Drivetrain {
     double MAX_POWER = 1.0;
 
     public Drivetrain(
+            HardwareMap hardwareMap,
             String left_front_name,
             String right_front_name,
             String left_back_name,
-            String right_back_name,
+            String right_back_name
     ) {
         telemetry.addData("Initializing drivetrain...");
         telemetry.update();
@@ -50,13 +52,14 @@ public class Drivetrain {
     }
 
     public Drivetrain(
+            HardwareMap hardwareMap,
             String left_front_name,
             String right_front_name,
             String left_back_name,
             String right_back_name,
             double max_power
     ) {
-        this(left_front_name, right_front_name, left_back_name, right_back_name);
+        this(hardwareMap, left_front_name, right_front_name, left_back_name, right_back_name);
         MAX_POWER = max_power;
     }
 
@@ -64,13 +67,13 @@ public class Drivetrain {
         return 0 < power && power < MAX_POWER;
     }
 
-    public DcMotor getFrontLeftMotor() { return this.left_front };
+    public DcMotor getFrontLeftMotor() { return this.left_front; };
 
-    public DcMotor getFrontRightMotor() { return this.right_front };
+    public DcMotor getFrontRightMotor() { return this.right_front; };
 
-    public DcMotor getBackLeftMotor() { return this.left_back };
+    public DcMotor getBackLeftMotor() { return this.left_back; };
 
-    public DcMotor getFrontLeftMotor() { return this.right_back };
+    public DcMotor getFrontLeftMotor() { return this.right_back; };
 
     public void directSetLeftFrontPower(double power) { this.left_front.setPower(power) };
 
@@ -80,82 +83,7 @@ public class Drivetrain {
 
     public void directSetRightBackPower(double power) { this.left_front.setPower(power) };
 
-    public int forward(double power, double time) {
-        if (!this.valid_power(power)) {
-            return 1; // invalid power code
-        }
-
-        for (DcMotor m : motors) {
-            m.setPower(power);
-        }
-
-        sleep(time * 1000);
-
-        for (DcMotor m : motors) {
-            m.setPower(0);
-        }
-
-        return 0;
-    }
-
-    public int backward(double power, double time) {
-        if (!this.valid_power(power)) {
-            return 1; // invalid power code
-        }
-
-
-        this.reverse();
-
-        for (DcMotor m : motors) {
-            m.setPower(power);
-        }
-
-        sleep(time * 1000);
-
-        for (DcMotor m : motors) {
-            m.setPower(0);
-        }
-
-        return 0;
-    }
-
-    public int strafe_right(double power, double time) {
-        fl = power;
-        fr = -power;
-        bl = -power;
-        br = power;
-
-        frontLeft.setPower(fl);
-        frontRight.setPower(fr);
-        backLeft.setPower(bl);
-        backRight.setPower(br);
-
-        sleep(time * 1000);
-
-        for (DcMotor m : motors) {
-            m.setPower(0);
-        }
-    }
-
-    public int strafe_left(double power, double time) {
-        fl = -power;
-        fr = power;
-        bl = power;
-        br = -power;
-
-        frontLeft.setPower(fl);
-        frontRight.setPower(fr);
-        backLeft.setPower(bl);
-        backRight.setPower(br);
-
-        sleep(time * 1000);
-
-        for (DcMotor m : motors) {
-            m.setPower(0);
-        }
-    }
-
-    public int move_with_params(double x, double y, double rot, double power, double time) {
+    public void move_with_params(double x, double y, double rot, double power, double time) {
         fl = y - (clockwise - x);
         fr = y + clockwise + x;
         bl = y - (clockwise + x);
@@ -173,33 +101,27 @@ public class Drivetrain {
         }
     }
 
-    public int moveWithCoords(double x, double y, double rot, double power, double time) {
-        // implement after localization is perfecto
-        return 0;
+    /*
+     * Move relative to the current location of the robot (in meters).
+     * Uses the on-bot encoders.
+     */
+    public void moveWithDistanceCoords(double mX, double mY) {
+
     }
 
-    public DcMotor getLeftFront() {
-        return left_front;
-    }
+    /*
+     * Rotate relative to the current orientation of the robot (in degrees).
+     */
+    public void rotateDegrees(double rAngle) {
 
-    public DcMotor getRightFront() {
-        return right_front;
-    }
-
-    public DcMotor getLeftBack() {
-        return left_back;
-    }
-
-    public DcMotor getRightBack() {
-        return right_back;
     }
 
     public void setAllMotors(
-            double left_front_power,
-            double right_front_power,
-            double left_back_power,
-            double right_back_power,
-            ) {
+        double left_front_power,
+        double right_front_power,
+        double left_back_power,
+        double right_back_power
+    ) {
         left_front_motor.setPower(left_front_power);
         right_front_motor.setPower(right_front_power);
         left_back_motor.setPower(left_back_power);

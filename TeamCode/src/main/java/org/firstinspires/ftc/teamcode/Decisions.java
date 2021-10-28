@@ -11,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 public class Decisions {
-    Telemetry telemetry = null;
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] TFOD_LABELS = {
             "Ball",
@@ -66,9 +65,7 @@ public class Decisions {
         tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, TFOD_LABELS);
-    }
 
-    private void preInitTfod() {
         if (tfod != null) {
             tfod.activate();
 

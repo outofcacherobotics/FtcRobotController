@@ -50,20 +50,6 @@ public class AutoControls {
         this.right_back_power.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void update() {
-        x = gamepad.left_stick_x;
-        y = gamepad.left_stick_y;
-        clockwise = gamepad.right_stick_x;
-
-        forward = x * sin + y * cos;
-        right = x * cos - y * sin;
-
-        this.left_front_power = forward + clockwise + right;
-        this.right_front_power = forward - (clockwise - right);
-        this.left_back_power = forward + (clockwise - right);
-        this.right_back_power = forward - (clockwise + right);
-    }
-
     public double getLeftFrontPower() { return left_front_power; }
 
     public double getRightFrontPower() {
