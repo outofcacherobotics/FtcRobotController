@@ -44,6 +44,14 @@ public class Controls {
         setPowerBehavior();
     }
 
+    public double getLeftFrontPower() { return left_front_power; };
+
+    public double getRightFrontPower() { return right_front_power; };
+
+    public double getLeftBackPower() { return left_back_power; };
+
+    public double getRightBackPower() { return right_back_power; };
+
     public void setPowerBehavior() {
         if (this.motor_enabled) {
             left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -94,12 +102,4 @@ public class Controls {
             br = y + x + clockwise;
         }
     }
-
-    public double getLeftFrontPower() { return left_front_power; }
-
-    public double getRightFrontPower() { return right_front_power; }
-
-    public double getLeftBackPower() { return left_back_power; }
-
-    public double getRightBackPower() { return right_back_power; }
 }

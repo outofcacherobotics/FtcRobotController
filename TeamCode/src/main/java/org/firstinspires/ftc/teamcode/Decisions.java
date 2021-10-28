@@ -11,6 +11,16 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 public class Decisions {
+    private String teamColor = "blue";
+
+    /**
+     * Ideal coordinates of the robot to correctly perceive the game objects (X, Y, rot)
+     * X is reflected depending on the competing team.
+     */
+    public int[] IDEAL_CAMERA_COORDS = {}
+    private int[] LEFT_SEPERATION_BOUNDARIES = {}
+    private int[] RIGHT_SEPERATION_BOUNDARIES = {}
+
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] TFOD_LABELS = {
             "Ball",
@@ -52,6 +62,11 @@ public class Decisions {
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
 
+    // Blue or red
+    public void setTeamColor(String teamColor) {
+        this.teamColor = teamColor
+    }
+
     /**
      * Initialize the TensorFlow Object Detection engine.
      * https://first-tech-challenge.github.io/SkyStone/org/firstinspires/ftc/robotcore/external/tfod/TFObjectDetector.html
@@ -81,7 +96,8 @@ public class Decisions {
         return tfod.getUpdatedRecognitions();
     }
 
-    public void printTensorflowRecognitions() {
+    public void displayTensorflowRecognitions() {
+        List<Recognition> updatedRecognitions = getTensorflowRecognitions();
         for (recognition : updatedRecognitions) {
             telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
             telemetry.addData(
@@ -105,7 +121,11 @@ public class Decisions {
         }
     }
 
+    /**
+     * After in the right camera position on the field, call this to decide which spot the duck is in.
+     */
     public int getDecision() {
+        List<Recognition> updatedRecognitions = getTensorflowRecognitions();
         /*
             identify 3 objects - 1 duck, 2 non-duck
             identify which object is the duck
@@ -120,4 +140,21 @@ public class Decisions {
                     // right
             }
         */
+        
+        /*
+         * Loop through new recognitions, for each one decide whether it is in 
+         * the pre defined boundaries above.
+         */
+        for (recognition : updatedRecognitions) {
+            if (recognition.getLabel() == "Duck") {
+                for (int i=0; i<LEFT_SEPERATION_BOUNDARIES.length(), i++) {
+                    if (recognition.getLeft() > LEFT_SEPERATION_BOUNDARIES[i] && recognition.getRight() < RIGHT_SEPERATION_BOUNDARIES[i]) {
+                        return i + 1;
+                    }
+                }
+            }
+        }
+
+        return 0;
     }
+}
