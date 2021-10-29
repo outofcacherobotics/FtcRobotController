@@ -10,7 +10,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
+/**
+* Docs
+* https://first-tech-challenge.github.io/SkyStone/org/firstinspires/ftc/robotcore/external/tfod/package-summary.html
+*/
 public class Decisions {
+    private Localizer localizer;
     private String teamColor = "blue";
 
     /**

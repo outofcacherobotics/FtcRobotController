@@ -12,6 +12,7 @@ import java.util.Arrays;
  * Has some information about robot movement.
  *
  * Note: time is always in seconds and is represented by a double for 8-bit precision.
+ * View HardwarePushbot for encoder use
  */
 public class Drivetrain {
     DcMotor left_front;

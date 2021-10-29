@@ -35,10 +35,12 @@ public class Simple_Mecanum extends LinearOpMode {
             while (opModeIsActive()) {
                 controls.update();
                 
-                this.drivetrain.directSetLeftFrontPower(fl);
-                this.drivetrain.directSetRightFrontPower(fr);
-                this.drivetrain.directSetLeftBackPower(bl);
-                this.drivetrain.directSetRightBackPower(br);
+                drivetrain.setAllMotors(
+                        controls.getLeftFrontPower(),
+                        controls.getRightFrontPower(),
+                        controls.getLeftBackPower(),
+                        controls.getRightBackPower()
+                );
 
                 telemetry.update();
             }

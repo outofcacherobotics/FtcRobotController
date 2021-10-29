@@ -24,6 +24,7 @@ public class Simple_Mecanum extends LinearOpMode {
 
         this.controls = new Controls(
             gamepad1, 
+            "slowmode",
             drivetrain.getFrontLeftMotor(),
             drivetrain.getFrontRightMotor(),
             drivetrain.getBackLeftMotor(),
