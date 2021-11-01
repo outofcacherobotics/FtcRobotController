@@ -1,12 +1,42 @@
 package main.java.org.firstinspires.ftc.teamcode;
 
+import android.graphics.Bitmap;
+import java.util.logging.Handler;
+import android.graphics.ImageFormat;
+import android.os.Handler;
+
+import androidx.annotation.NonNull;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.RobotLog;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.android.util.Size;
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureRequest;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSequenceId;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSession;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCharacteristics;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraException;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraFrame;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.internal.collections.EvictingBlockingQueue;
+import org.firstinspires.ftc.robotcore.internal.network.CallbackLooper;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.robotcore.internal.system.ContinuationSynchronizer;
+import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Handler;
 
 /**
  * Docs
@@ -80,7 +110,7 @@ public class Webcam {
         // Use cameraManager to request permission and acquire camera
         camera = cameraManager.requestPermissionAndOpenCamera(deadline, cameraName, null);
         if (camera == null) {
-            error("camera not found or permission to use not granted")
+            error("camera not found or permission to use not granted");
         }
     }
 
@@ -111,7 +141,7 @@ public class Webcam {
                         final CameraCaptureRequest captureRequest = camera.createCaptureRequest(imageFormat, size, fps);
                         session.startCapture(captureRequest, 
                             new CameraCaptureSession.CaptureCallback() {
-                                @Override public void onNewFrame(@NonNull CameraCaptureSession session, @NonNull, CameraCaptureRequest request, @NonNull CameraFrame cameraFrame) {
+                                @Override public void onNewFrame(@NonNull CameraCaptureSession session, @NonNull CameraCaptureRequest request, @NonNull CameraFrame cameraFrame) {
                                     Bitmap bmp = captureRequest.createEmptyBitmap();
                                     cameraFrame.copyToBitmap(bmp);
                                     frameQueue.offer(bmp);
@@ -139,6 +169,8 @@ public class Webcam {
             }
 
             cameraCaptureSession = synchronizer.getValue();
+        } catch (Error err) {
+            return;
         }
     }
 

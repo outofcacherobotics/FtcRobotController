@@ -1,6 +1,6 @@
 package main.java.org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 /**
  * Controls gets information from the gamepad and performs calculations in order
@@ -53,11 +53,11 @@ public class Controls {
     }
 
     private void updateSlowmode() {
-        float x = gamepad1.left_stick_x;
-        float y = gamepad1.left_stick_y;
-        float clockwise = gamepad1.right_stick_x;
+        float x = gamepad.left_stick_x;
+        float y = gamepad.left_stick_y;
+        float clockwise = gamepad.right_stick_x;
 
-        if (gamepad1.right_bumper) {
+        if (gamepad.right_bumper) {
             left_front_power = (y - x - clockwise)/2;
             right_front_power = (y - x + clockwise)/2;
             left_back_power = (y + x - clockwise)/2;

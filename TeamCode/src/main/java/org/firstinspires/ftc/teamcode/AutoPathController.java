@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * AutoPathDrivetrain is an abstraction of the drivetrain. Use this for Autos
+ * AutoPathController is an abstraction of the drivetrain. Use this for Autos
  * where a pre defined path needs to be executed.
  */
-public class AutoPathDrivetrain {
+public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;
 
     // History of movements, used by Localizer.
@@ -29,8 +29,13 @@ public class AutoPathDrivetrain {
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
     double currentAngle;
     private ElapsedTime runtime = new ElapsedTime();
-    static final double FIELD_HEIGHT_CM = 100.0;
-    static final double FIELD_WIDTH_CM = 100.0;
+    static final double FIELD_HEIGHT_CM = 365.7;
+    static final double FIELD_WIDTH_CM = 365.7;
+
+    static final double[] BLUE_BOTTOM_STARTING_COORDS = { 11.5, 33.5 };
+    static final double[] BLUE_TOP_STARTING_COORDS = { 11.5, 81.0 };
+    static final double[] RED_BOTTOM_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 33.5 };
+    static final double[] RED_TOP_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 81.0 };
 
     static final double AUTO_DRIVE_SPEED = 0.7;
     static final double AUTO_TURN_SPEED = 0.5;
@@ -40,26 +45,39 @@ public class AutoPathDrivetrain {
     static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
 
     static final double PULSES_PER_REVOLUTION = 384.5;
-    static final double WHEEL_DIAMETER_CM = 5.5;
+    static final double WHEEL_DIAMETER_CM = 8.7;
     static final double PULSES_PER_CM = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_CM * 3.1415);
 
-    public AutoPathDrivetrain(
+    public AutoPathController(
+            boolean gyroEnabled,
             HardwareMap hardwareMap,
             String left_front_name,
             String right_front_name,
             String left_back_name,
             String right_back_name,
-            double[] initial_coords,
+            String setupPosition,
             double setupAngle
     ) {
-        this.gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
+        if (gyroEnabled) {
+            this.gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
+        }
 
         this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
         this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
         this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
         this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
 
-        addToHistory(initial_coords);
+        switch (setupPosition) {
+            case "blueBottom":
+                addToHistory(BLUE_BOTTOM_STARTING_COORDS);
+            case "blueTop":
+                addToHistory(BLUE_TOP_STARTING_COORDS);
+            case "redBottom":
+                addToHistory(RED_BOTTOM_STARTING_COORDS);
+            case "redTop":
+                addToHistory(RED_TOP_STARTING_COORDS);
+        }
+        
         currentAngle = setupAngle;
     }
 
@@ -123,7 +141,7 @@ public class AutoPathDrivetrain {
     }
 
     /**
-     *  Method to drive with a gyro enabled.
+     *  Method to drive with a gyro disabled.
      *
      * @param distance   Distance (in cm) to move from current position.  Negative distance means move backwards.
      */
@@ -136,10 +154,10 @@ public class AutoPathDrivetrain {
         double leftCounts = (int) (leftCM * PULSES_PER_CM);
         double rightCounts = (int) (rightCM * PULSES_PER_CM);
 
-        int newFrontLeftTarget = left_front.getCurrentPosition() + leftCounts;
-        int newFrontRightTarget = right_front.getCurrentPosition() + rightCounts;
-        int newBackLeftTarget = left_back.getCurrentPosition() + leftCounts;
-        int newBackRightTarget = right_back.getCurrentPosition() + rightCounts;
+        int newFrontLeftTarget = left_front.getCurrentPosition() + (int)leftCounts;
+        int newFrontRightTarget = right_front.getCurrentPosition() + (int)rightCounts;
+        int newBackLeftTarget = left_back.getCurrentPosition() + (int)leftCounts;
+        int newBackRightTarget = right_back.getCurrentPosition() + (int)rightCounts;
 
         left_front.setTargetPosition(newFrontLeftTarget);
         right_front.setTargetPosition(newFrontRightTarget);
@@ -165,12 +183,13 @@ public class AutoPathDrivetrain {
         // Append to history (if it is straightline)
         if (leftCM > 0 && leftCM == rightCM) {
             double[] previousCoordinate = history[history.length - 1];
-            double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
-            double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
+            double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
+            double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
             double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
             addToHistory(coordinateEntry);
         } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
             double[] previousCoordinate = history[history.length - 1];
+            // Find out how to determine rotation angle from leftCM and rightCM
             double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
             addToHistory(coordinateEntry);
         }

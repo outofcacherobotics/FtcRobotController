@@ -1,6 +1,7 @@
 package main.java.org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -8,6 +9,7 @@ import main.java.org.firstinspires.ftc.teamcode.Controls;
 import main.java.org.firstinspires.ftc.teamcode.Drivetrain;
 
 @TeleOp
+@Disabled
 public class Simple_Mecanum extends LinearOpMode {
     private Drivetrain drivetrain;
     private Controls controls;
