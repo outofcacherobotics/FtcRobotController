@@ -15,19 +15,17 @@ public class Simple_Mecanum extends LinearOpMode {
     @Override
     public void runOpMode() {
         this.drivetrain = new Drivetrain(
+                hardwareMap,
             "frontLeft",
             "frontRight",
             "backLeft",
-            "backRight",
+            "backRight"
         );
 
+        //
         this.controls = new Controls(
             gamepad1,
-            "slowmode",
-            drivetrain.getFrontLeftMotor(),
-            drivetrain.getFrontRightMotor(),
-            drivetrain.getBackLeftMotor(),
-            drivetrain.getFrontLeftMotor(),
+            "slowmode"
         );
 
         waitForStart();

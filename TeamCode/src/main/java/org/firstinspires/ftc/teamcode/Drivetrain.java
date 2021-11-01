@@ -15,13 +15,19 @@ import java.util.Arrays;
  * View HardwarePushbot for encoder use
  */
 public class Drivetrain {
-    DcMotor left_front;
-    DcMotor right_front;
-    DcMotor left_back;
-    DcMotor right_back;
+    DcMotor left_front, right_front, left_back, right_back;
 
-    List<DcMotor> motors;
-    double left_front_power, right_front_power, left_back_power, right_back_power = 0;
+    // History of movements, used by Localizer
+    double[][] history;
+
+    public double[][] getHistory() { return history; };
+
+    public double[] getLatestHistory() { return history[history.length - 1]; };
+
+    private void addToHistory() {
+        history = ArrayUtils.add(history, newCoords);
+    };
+
     double MAX_POWER = 1.0;
 
     public Drivetrain(
@@ -31,9 +37,6 @@ public class Drivetrain {
             String left_back_name,
             String right_back_name
     ) {
-        telemetry.addData("Initializing drivetrain...");
-        telemetry.update();
-
         this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
         this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
         this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
@@ -42,14 +45,7 @@ public class Drivetrain {
         this.right_front.setDirection(DcMotor.Direction.REVERSE);
         this.right_back.setDirection(DcMotor.Direction.REVERSE);
 
-        right_front.setDirection(DcMotor.Direction.REVERSE);
-        right_back.setDirection(DcMotor.Direction.REVERSE);
-
-        DcMotor[] motorArray = {left_front, right_front, left_back, right_back};
-        motors = Arrays.asList<DcMotor>(motorArray);
-
-        telemetry.addData("Initialized drivetrain...");
-        telemetry.update();
+        setZeroPowerBehavior();
     }
 
     public Drivetrain(
@@ -64,9 +60,32 @@ public class Drivetrain {
         MAX_POWER = max_power;
     }
 
+    public void setZeroPowerBehavior() {
+        left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        left_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
     private boolean valid_power(double power) {
         return 0 < power && power < MAX_POWER;
     }
+
+    public void setAllMotors(
+        double left_front_power,
+        double right_front_power,
+        double left_back_power,
+        double right_back_power
+    ) {
+        left_front.setPower(left_front_power);
+        right_front.setPower(right_front_power);
+        left_back.setPower(left_back_power);
+        right_back.setPower(right_back_power);
+    }
+
+    // Add rotation while moving, but only after proper encoder distance calibration is calculated.
+    // Want to be able to correctly move the robot by distance instead of power output and time.
+    // When that is achieved, rotation can be implemented along with distance.
 
     public DcMotor getFrontLeftMotor() { return this.left_front; };
 
@@ -76,61 +95,12 @@ public class Drivetrain {
 
     public DcMotor getFrontLeftMotor() { return this.right_back; };
 
-    public void directSetLeftFrontPower(double power) { this.left_front.setPower(power) };
+    public void directSetLeftFrontPower(double power) { this.left_front.setPower(power); };
 
-    public void directSetRightFrontPower(double power) { this.left_front.setPower(power) };
+    public void directSetRightFrontPower(double power) { this.left_front.setPower(power); };
 
-    public void directSetLeftBackPower(double power) { this.left_front.setPower(power) };
+    public void directSetLeftBackPower(double power) { this.left_front.setPower(power); };
 
-    public void directSetRightBackPower(double power) { this.left_front.setPower(power) };
-
-    public void move_with_params(double x, double y, double rot, double power, double time) {
-        fl = y - (clockwise - x);
-        fr = y + clockwise + x;
-        bl = y - (clockwise + x);
-        br = y + (clockwise - x);
-
-        frontLeft.setPower(power * fl);
-        frontRight.setPower(power * fr);
-        backLeft.setPower(power * bl);
-        backRight.setPower(power * br);
-
-        sleep(time * 1000);
-
-        for (DcMotor m : motors) {
-            m.setPower(0);
-        }
-    }
-
-    /*
-     * Move relative to the current location of the robot (in meters).
-     * Uses the on-bot encoders.
-     */
-    public void moveWithDistanceCoords(double mX, double mY) {
-
-    }
-
-    /*
-     * Rotate relative to the current orientation of the robot (in degrees).
-     */
-    public void rotateDegrees(double rAngle) {
-
-    }
-
-    public void setAllMotors(
-        double left_front_power,
-        double right_front_power,
-        double left_back_power,
-        double right_back_power
-    ) {
-        left_front_motor.setPower(left_front_power);
-        right_front_motor.setPower(right_front_power);
-        left_back_motor.setPower(left_back_power);
-        right_back_motor.setPower(right_back_power);
-    }
-
-    // Add rotation while moving, but only after proper encoder distance calibration is calculated.
-    // Want to be able to correctly move the robot by distance instead of power output and time.
-    // When that is achieved, rotation can be implemented along with distance.
+    public void directSetRightBackPower(double power) { this.left_front.setPower(power); };
 }
 

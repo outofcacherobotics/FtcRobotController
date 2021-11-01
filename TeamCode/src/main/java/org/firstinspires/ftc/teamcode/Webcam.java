@@ -1,5 +1,17 @@
 package main.java.org.firstinspires.ftc.teamcode;
 
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
+
+/**
+ * Docs
+ * https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-an-External-Webcam-with-Control-Hub
+ */
 public class Webcam {
     private static final String TAG = "Webcam Sample";
 

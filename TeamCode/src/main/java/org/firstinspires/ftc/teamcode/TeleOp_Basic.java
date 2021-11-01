@@ -7,8 +7,8 @@ public class TeleOp_Basic extends OpMode {
 
     @Override
     public void init() {
-        drivetrain = new Drivetrain("left_front", "right_front", "left_back", "right_back");
-        controls = new Controls(this.gamepad1);
+        drivetrain = new Drivetrain(hardwareMap, "left_front", "right_front", "left_back", "right_back");
+        controls = new Controls(this.gamepad1, "slowmode");
         telemetry.addData("Status", "Initialized");
     }
 

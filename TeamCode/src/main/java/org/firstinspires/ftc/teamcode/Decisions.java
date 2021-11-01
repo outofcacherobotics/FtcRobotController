@@ -13,19 +13,35 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 /**
 * Docs
 * https://first-tech-challenge.github.io/SkyStone/org/firstinspires/ftc/robotcore/external/tfod/package-summary.html
+ * https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Java-Sample-TensorFlow-Object-Detection-Op-Mode
 */
 public class Decisions {
-    private Localizer localizer;
-    private String teamColor = "blue";
+    private String teamColor = "blue"; // Figure out how to dynamically set
 
     /**
      * Ideal coordinates of the robot to correctly perceive the game objects (X, Y, rot)
      * X is reflected depending on the competing team.
+     *
+     * Technically the robot is setup in this position, but we will need to angle the camera
+     * properly to get a view of the object.
      */
-    public int[] IDEAL_CAMERA_COORDS = {}
-    private int[] LEFT_SEPERATION_BOUNDARIES = {}
-    private int[] RIGHT_SEPERATION_BOUNDARIES = {}
+    public int[] IDEAL_CAMERA_COORDS = {};
+    public double POSITION_OFFSET = 0.1;
 
+    /**
+     * Three in length, starts with 0
+     */
+    private int[] LEFT_SEPERATION_BOUNDARIES = {};
+
+    /**
+     * Three in length, ends with the width of the image
+     */
+    private int[] RIGHT_SEPERATION_BOUNDARIES = {};
+
+    /**
+     * Model and labels that are going to be detected.
+     * Customize at https://github.com/FIRST-Tech-Challenge/fmltc/blob/main/doc/usage.md#overview
+     */
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] TFOD_LABELS = {
             "Ball",
@@ -49,6 +65,13 @@ public class Decisions {
      */
     private TFObjectDetector tfod;
 
+    public Decisions(String teamColor) {
+        this.teamColor = teamColor;
+
+        initVuforia();
+        initTfod();
+    }
+
     /**
      * Initialize the Vuforia localization engine.
      */
@@ -65,11 +88,6 @@ public class Decisions {
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
         // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-
-    // Blue or red
-    public void setTeamColor(String teamColor) {
-        this.teamColor = teamColor
     }
 
     /**
@@ -101,35 +119,10 @@ public class Decisions {
         return tfod.getUpdatedRecognitions();
     }
 
-    public void displayTensorflowRecognitions() {
-        List<Recognition> updatedRecognitions = getTensorflowRecognitions();
-        for (recognition : updatedRecognitions) {
-            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-            telemetry.addData(
-                String.format(
-                    "label (%d)",
-                    i
-                ),
-                recognition.getLabel()
-            );
-            telemetry.addData(
-                String.format(
-                    "  left,top (%d)",
-                    i
-                ),
-                "%.03f , %.03f",
-                recognition.getLeft(),
-                recognition.getTop()
-            );
-            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                    recognition.getRight(), recognition.getBottom());
-        }
-    }
-
     /**
      * After in the right camera position on the field, call this to decide which spot the duck is in.
      */
-    public int getDecision() {
+    public int getDecision(int[] currentCoordiates) {
         List<Recognition> updatedRecognitions = getTensorflowRecognitions();
         /*
             identify 3 objects - 1 duck, 2 non-duck
@@ -145,6 +138,12 @@ public class Decisions {
                     // right
             }
         */
+
+        // Check for acceptable currentCoordinates
+        if (Math.abs(currentCoordiates[0] - IDEAL_CAMERA_COORDS[0]) > POSITION_OFFSET ||
+                Math.abs(currentCoordiates[1] - IDEAL_CAMERA_COORDS[1]) > POSITION_OFFSET) {
+            return 0;
+        }
         
         /*
          * Loop through new recognitions, for each one decide whether it is in 
@@ -152,8 +151,9 @@ public class Decisions {
          */
         for (recognition : updatedRecognitions) {
             if (recognition.getLabel() == "Duck") {
-                for (int i=0; i<LEFT_SEPERATION_BOUNDARIES.length(), i++) {
-                    if (recognition.getLeft() > LEFT_SEPERATION_BOUNDARIES[i] && recognition.getRight() < RIGHT_SEPERATION_BOUNDARIES[i]) {
+                for (int i=0; i<LEFT_SEPERATION_BOUNDARIES.length; i++) {
+                    if (recognition.getLeft() > LEFT_SEPERATION_BOUNDARIES[i] &&
+                            recognition.getRight() < RIGHT_SEPERATION_BOUNDARIES[i]) {
                         return i + 1;
                     }
                 }
@@ -162,4 +162,7 @@ public class Decisions {
 
         return 0;
     }
+
+    // Blue or red, use in every OpMode
+    public void setTeamColor(String teamColor) { this.teamColor = teamColor; };
 }
