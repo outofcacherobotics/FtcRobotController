@@ -32,10 +32,10 @@ public class AutoPathController {
     static final double FIELD_HEIGHT_CM = 365.7;
     static final double FIELD_WIDTH_CM = 365.7;
 
-    static final double[] BLUE_BOTTOM_STARTING_COORDS = { 11.5, 33.5 };
-    static final double[] BLUE_TOP_STARTING_COORDS = { 11.5, 81.0 };
-    static final double[] RED_BOTTOM_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 33.5 };
-    static final double[] RED_TOP_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 81.0 };
+    static final double[] BLUE_BOTTOM_STARTING_COORDS = { 29.2, 33.5 };
+    static final double[] BLUE_TOP_STARTING_COORDS = { 29.2, 205.7 };
+    static final double[] RED_BOTTOM_STARTING_COORDS = { FIELD_WIDTH_CM - 29.2, 33.5 };
+    static final double[] RED_TOP_STARTING_COORDS = { FIELD_WIDTH_CM - 29.2, 81.0 };
 
     static final double AUTO_DRIVE_SPEED = 0.7;
     static final double AUTO_TURN_SPEED = 0.5;
