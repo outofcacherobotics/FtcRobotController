@@ -10,7 +10,7 @@ import main.java.org.firstinspires.ftc.teamcode.Drivetrain;
 
 @TeleOp
 @Disabled
-public class Simple_Mecanum extends LinearOpMode {
+public class Slowmode_Mecanum extends LinearOpMode {
     private Drivetrain drivetrain;
     private Controls controls;
 
