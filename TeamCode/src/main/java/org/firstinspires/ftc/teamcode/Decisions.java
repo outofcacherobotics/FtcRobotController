@@ -1,6 +1,7 @@
 package main.java.org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
@@ -65,17 +66,17 @@ public class Decisions {
      */
     private TFObjectDetector tfod;
 
-    public Decisions(String teamColor) {
+    public Decisions(HardwareMap hardwareMap, String teamColor) {
         this.teamColor = teamColor;
 
-        initVuforia();
-        initTfod();
+        initVuforia(hardwareMap);
+        initTfod(hardwareMap);
     }
 
     /**
      * Initialize the Vuforia localization engine.
      */
-    private void initVuforia() {
+    private void initVuforia(HardwareMap hardwareMap) {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
@@ -94,7 +95,7 @@ public class Decisions {
      * Initialize the TensorFlow Object Detection engine.
      * https://first-tech-challenge.github.io/SkyStone/org/firstinspires/ftc/robotcore/external/tfod/TFObjectDetector.html
      */
-    private void initTfod() {
+    private void initTfod(HardwareMap hardwareMap) {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
@@ -149,7 +150,7 @@ public class Decisions {
          * Loop through new recognitions, for each one decide whether it is in 
          * the pre defined boundaries above.
          */
-        for (recognition : updatedRecognitions) {
+        for (Recognition recognition : updatedRecognitions) {
             if (recognition.getLabel() == "Duck") {
                 for (int i=0; i<LEFT_SEPERATION_BOUNDARIES.length; i++) {
                     if (recognition.getLeft() > LEFT_SEPERATION_BOUNDARIES[i] &&

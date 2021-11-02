@@ -24,7 +24,7 @@ public class Drivetrain {
 
     public double[] getLatestHistory() { return history[history.length - 1]; };
 
-    private void addToHistory() {
+    private void addToHistory(double[] newCoords) {
         history = ArrayUtils.add(history, newCoords);
     };
 
@@ -93,7 +93,7 @@ public class Drivetrain {
 
     public DcMotor getBackLeftMotor() { return this.left_back; };
 
-    public DcMotor getFrontLeftMotor() { return this.right_back; };
+    public DcMotor getBackLeftMotor() { return this.right_back; };
 
     public void directSetLeftFrontPower(double power) { this.left_front.setPower(power); };
 
