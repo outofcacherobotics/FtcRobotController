@@ -10,7 +10,7 @@ import org.json.*;
 
 Class main{
     public static void main(String[] args){
-        boolean robotRunning = Status.getRobotStatus(running);
+        boolean robotRunning = Status.getRobotStatus(robotOn);
             if (robotRunning) {
                 String statusJsonString = '{
                     "running": true
