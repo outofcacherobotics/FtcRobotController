@@ -8,21 +8,10 @@ import java.net.http.HttpRequest;
 import static org.junit.Assert.*;
 import org.json.*;
 
-Class main{
+class Main { 
     public static void main(String[] args){
-        boolean robotRunning = Status.getRobotStatus(robotOn);
-            if (robotRunning) {
-                String statusJsonString = '{
-                    "running": true
-                  }';
-            } else {
-                String statusJsonString = '{
-                    "running": false
-                  }';
-            }
+        boolean robotRunning = Status.getRobotStatus();
+        System.out.println(robotRunning);
     }
-    /* creates boolean robotRunning from getRobotStatus, robotRunning being true creates "running: true" JSON string
-       otherwise "running: false" string is created
-       likely not going to work first attempts, fix during meet if screwed up
-       */
+    /*JSON string set to running: true if robot is running, likely not going to work first tries*/
 }
