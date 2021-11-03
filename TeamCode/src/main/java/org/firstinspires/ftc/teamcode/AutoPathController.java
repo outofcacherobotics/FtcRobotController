@@ -1,10 +1,12 @@
-package main.java.org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.Arrays;
 
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
@@ -20,7 +22,8 @@ public class AutoPathController {
     public double[][] getHistory() { return history; };
 
     private void addToHistory(double[] newCoords) {
-        history[history.length] = newCoords;
+        history = Arrays.copyOf(history, history.length + 1);
+        history[history.length - 1] = newCoords;
     };
 
     ModernRoboticsI2cGyro gyro;
@@ -28,7 +31,7 @@ public class AutoPathController {
     // Orientation relative to the top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
     double currentAngle;
-    private ElapsedTime runtime = new ElapsedTime();
+    static final ElapsedTime runtime = new ElapsedTime();
     static final double FIELD_HEIGHT_CM = 365.7;
     static final double FIELD_WIDTH_CM = 365.7;
 
@@ -143,7 +146,8 @@ public class AutoPathController {
     /**
      *  Method to drive with a gyro disabled.
      *
-     * @param distance   Distance (in cm) to move from current position.  Negative distance means move backwards.
+     * @param rightCM   Distance (in cm) to move left from current position.
+     * @param leftCM   Distance (in cm) to move right from current position.
      */
     public void drive(double leftCM, double rightCM, double timeoutS) {
         // For now, only straightline/rotating allowed
@@ -195,6 +199,11 @@ public class AutoPathController {
         }
     }
 
+    /**
+     *  Method to drive with a gyro enabled.
+     *
+     * @param relativeAngle Angle relative to currentAngle that robot is to turn.
+     */
     public void rotate(double relativeAngle) {
         // Test tomorrow
     }
@@ -257,7 +266,7 @@ public class AutoPathController {
     /**
      *  Method to turn with a gyro enabled.
      *
-     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
+     * @param relativeAngle      Absolute Angle (in Degrees) relative to last gyro reset.
      *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
      *                   If a relative angle is required, add/subtract from current heading.
      */
@@ -276,9 +285,6 @@ public class AutoPathController {
      *  Method to obtain & hold a heading for a finite amount of time
      *  Move will stop once the requested time has elapsed
      *
-     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
-     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
      * @param holdTime   Length of time (in seconds) to hold the specified heading.
      */
     public void gyroHold(double holdTime) {
@@ -344,10 +350,10 @@ public class AutoPathController {
         double xPos = 0;
         double yPos = 0;
 
-        for (int i=0; i<history.length; i++) {
-            rot += history[i][0];
-            xPos += history[i][1];
-            yPos += history[i][2];
+        for (double[] entry : history) {
+            rot += entry[0];
+            xPos += entry[1];
+            yPos += entry[2];
         }
 
         return new double[] { rot, xPos, yPos };

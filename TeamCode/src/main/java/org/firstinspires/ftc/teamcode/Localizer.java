@@ -1,4 +1,4 @@
-package main.java.org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode;
 
 /*
  * ConceptVuforiaFieldNavigationWebcam

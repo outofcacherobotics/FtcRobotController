@@ -1,9 +1,7 @@
-package main.java.org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.Arrays;
 
@@ -25,7 +23,8 @@ public class Drivetrain {
     public double[] getLatestHistory() { return history[history.length - 1]; };
 
     private void addToHistory(double[] newCoords) {
-        history[history.length] = newCoords;
+        history = Arrays.copyOf(history, history.length + 1);
+        history[history.length - 1] = newCoords;
     };
 
     double MAX_POWER = 1.0;
@@ -46,18 +45,6 @@ public class Drivetrain {
         this.right_back.setDirection(DcMotor.Direction.REVERSE);
 
         setZeroPowerBehavior();
-    }
-
-    public Drivetrain(
-            HardwareMap hardwareMap,
-            String left_front_name,
-            String right_front_name,
-            String left_back_name,
-            String right_back_name,
-            double max_power
-    ) {
-        this(hardwareMap, left_front_name, right_front_name, left_back_name, right_back_name);
-        MAX_POWER = max_power;
     }
 
     public void setZeroPowerBehavior() {
