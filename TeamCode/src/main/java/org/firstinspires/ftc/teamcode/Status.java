@@ -21,6 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+// Read something like this: https://openjdk.java.net/groups/net/httpclient/recipes.html
 public class Status {
     static final String API_URL = "https://us-central1-robotics-api.cloudfunctions.net";
     // String API_KEY = System.getenv("outofcache_api_key");
