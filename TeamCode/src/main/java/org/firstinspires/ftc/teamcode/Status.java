@@ -1,29 +1,35 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.ResponseBody;
+
+// run: https://stackoverflow.com/questions/11527941/java-packages-cannot-find-symbol
+class Parsetest {
+    public static void main(String[] args) {
+        Status robotStatus = new Status();
+        boolean robotRunning = robotStatus.getRobotStatus();
+        System.out.println(robotRunning);
+    }
+}
 
 // Read something like this: https://openjdk.java.net/groups/net/httpclient/recipes.html
 public class Status {
     static final String API_URL = "https://us-central1-robotics-api.cloudfunctions.net";
     // String API_KEY = System.getenv("outofcache_api_key");
 
-    HTTPClient client;
+    OkHttpClient client;
     private boolean robotOn;
 
     public Status() {
-        this.client = HTTPClient.newHTTPClient();
+        this.client = new OkHttpClient();
         this.robotOn = getRobotStatus();
     }
 
@@ -36,91 +42,41 @@ public class Status {
     }
 
     public boolean getRobotStatus() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(this.API_URL + "/setOn"))
-                .header("accept", "application/json")
+        Request request = new Request.Builder()
+                .url(API_URL)
                 .build();
 
-        HttpResponse<Object> response;
+        ObjectMapper objectMapper = new ObjectMapper();
+        ResponseBody responseBody;
         try {
-            response = client.send(request, HTTPResponse.BodyHandlers);
+            responseBody = client.newCall(request).execute().body();
+            StatusResponse statusResponse = objectMapper.readValue(responseBody.string(), StatusResponse.class);
+            System.out.println(statusResponse.getRunning());
+            return statusResponse.getRunning();
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
 
-        int statusCode = response.statusCode();
-        if (statusCode >= 200 && statusCode <= 299) {
-            throw new Error("request failed");
-        }
-
-        ObjectMapper mapper = new ObjectMapper();
-        StatusResponse statusResponse = mapper.readValue(response.Body(), new TypeReference<StatusResponse>);
+        return false;
     }
 
     public void startRobot() {
-        // make post
-        HttpRequest request = HttpRequest.newBuilder(
-                URI.create(this.API_URL + "/setOn"))
-                .header("accept", "application/json")
-                .build();
-
-        HttpResponse<Object> response;
-        try {
-            response = client.send(request, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        int statusCode = response.statusCode();
-        if (statusCode >= 200 && statusCode <= 299) {
-            throw new Error("request failed");
-        }
-
         this.setRobotOn(true);
     }
 
     public void stopRobot() {
-
-        // Make post
-        HttpRequest request = HttpRequest.newBuilder(
-                URI.create(API_URL + "/setOff"))
-                .header("accept", "application/json")
-                .build();
-
-        HttpResponse<Object> response;
-        try {
-            response = client.send(request, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        int statusCode = response.statusCode();
-        if (statusCode >= 200 && statusCode <= 299) {
-            throw new Error("request failed");
-        }
-
         this.setRobotOn(false);
-    }
-
-    public static boolean parseRobotRunning(String responseBody) {
-        boolean isRunning;
-        JSONArray running = new JSONArray(responseBody);
-        try {
-            isRunning = running.getBoolean(0);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return isRunning;
     }
 }
 
-@Test
+class StatusResponse {
+    boolean running;
+
+    public boolean getRunning() { return running; };
+}
+
 class StatusTest {
+    @Test
     public void TestStartRobot() {
         Status status = new Status();
         assertEquals(status.getRobotOn(), false);
@@ -128,6 +84,7 @@ class StatusTest {
         assertEquals(status.getRobotOn(), true);
     }
 
+    @Test
     public void TestStopRobot() {
         Status status = new Status();
         assertEquals(status.getRobotOn(), false);
