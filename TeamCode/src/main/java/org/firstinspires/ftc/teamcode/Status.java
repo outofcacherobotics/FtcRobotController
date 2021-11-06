@@ -8,15 +8,8 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import android.net.http.AndroidHttpClient;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -64,43 +57,6 @@ public class Status {
 
         ObjectMapper mapper = new ObjectMapper();
         StatusResponse statusResponse = mapper.readValue(response.Body(), new TypeReference<StatusResponse>);
-
-//        HttpURLConnection connection;
-//        BufferedReader reader;
-//
-//        try {
-//            URL url = new URL(API_URL + "/status");
-//            connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestMethod("GET");
-//            connection.setConnectTimeout(5000);
-//            connection.setReadTimeout(5000);
-//
-//            int status = connection.getResponseCode();
-//
-//            if (status > 299) {
-//                reader = new BufferredReader(new InputStreamReader(connection.getErrorStream()));
-//                while ((line = reader.readLine()) != null) {
-//                    responseContent.append(line);
-//                }
-//
-//                reader.close();
-//            } else {
-//                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-//                while ((line = reader.readLine()) != null) {
-//                    responseContent.append(line);
-//                }
-//
-//                reader.close();
-//            }
-//
-//
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            connection.disconnect();
-//        }
     }
 
     public void startRobot() {
@@ -160,16 +116,6 @@ public class Status {
         }
 
         return isRunning;
-    }
-}
-
-class StatusResponse {
-    private boolean running;
-
-    public boolean getRunning() { return running; };
-
-    public void setRunning(boolean running) {
-        this.running = running;
     }
 }
 
