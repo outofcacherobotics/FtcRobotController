@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.location.Location;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -16,16 +18,7 @@ public class Drivetrain {
     DcMotor left_front, right_front, left_back, right_back;
 
     // History of movements, used by Localizer
-    double[][] history;
-
-    public double[][] getHistory() { return history; };
-
-    public double[] getLatestHistory() { return history[history.length - 1]; };
-
-    private void addToHistory(double[] newCoords) {
-        history = Arrays.copyOf(history, history.length + 1);
-        history[history.length - 1] = newCoords;
-    };
+    LocationHistory history;
 
     double MAX_POWER = 1.0;
 

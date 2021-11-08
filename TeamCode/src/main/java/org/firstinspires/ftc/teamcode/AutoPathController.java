@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.location.Location;
+
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,16 +17,7 @@ import java.util.Arrays;
 public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;
 
-    // History of movements, used by Localizer.
-    // List of arrays, 0 index being rotation in degrees, 1 and 2 being X and Y
-    double[][] history;
-
-    public double[][] getHistory() { return history; };
-
-    private void addToHistory(double[] newCoords) {
-        history = Arrays.copyOf(history, history.length + 1);
-        history[history.length - 1] = newCoords;
-    };
+    LocationHistory history;
 
     ModernRoboticsI2cGyro gyro;
 
@@ -72,13 +65,13 @@ public class AutoPathController {
 
         switch (setupPosition) {
             case "blueBottom":
-                addToHistory(BLUE_BOTTOM_STARTING_COORDS);
+                history.pushCoords(BLUE_BOTTOM_STARTING_COORDS);
             case "blueTop":
-                addToHistory(BLUE_TOP_STARTING_COORDS);
+                history.pushCoords(BLUE_TOP_STARTING_COORDS);
             case "redBottom":
-                addToHistory(RED_BOTTOM_STARTING_COORDS);
+                history.pushCoords(RED_BOTTOM_STARTING_COORDS);
             case "redTop":
-                addToHistory(RED_TOP_STARTING_COORDS);
+                history.pushCoords(RED_TOP_STARTING_COORDS);
         }
         
         currentAngle = setupAngle;
@@ -186,16 +179,16 @@ public class AutoPathController {
 
         // Append to history (if it is straightline)
         if (leftCM > 0 && leftCM == rightCM) {
-            double[] previousCoordinate = history[history.length - 1];
+            double[] previousCoordinate = history.getPreviousCoordinate();
             double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
             double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
             double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-            addToHistory(coordinateEntry);
+            history.pushCoords(coordinateEntry);
         } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
-            double[] previousCoordinate = history[history.length - 1];
+            double[] previousCoordinate = history.getPreviousCoordinate();
             // Find out how to determine rotation angle from leftCM and rightCM
             double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
-            addToHistory(coordinateEntry);
+            history.pushCoords(coordinateEntry);
         }
     }
 
@@ -256,11 +249,11 @@ public class AutoPathController {
         setRunUsingEncoder();
 
         // Append to history
-        double[] previousCoordinate = history[history.length - 1];
+        double[] previousCoordinate = history.getPreviousCoordinate();
         double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
         double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
         double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-        addToHistory(coordinateEntry);
+        history.pushCoords(coordinateEntry);
     }
 
     /**
@@ -276,9 +269,9 @@ public class AutoPathController {
         }
 
         currentAngle += relativeAngle;
-        double[] previousCoordinate = history[history.length - 1];
+        double[] previousCoordinate = history.getPreviousCoordinate();
         double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
-        addToHistory(coordinateEntry);
+        history.pushCoords(coordinateEntry);
     }
 
     /**
@@ -350,7 +343,7 @@ public class AutoPathController {
         double xPos = 0;
         double yPos = 0;
 
-        for (double[] entry : history) {
+        for (double[] entry : history.getHistory()) {
             rot += entry[0];
             xPos += entry[1];
             yPos += entry[2];

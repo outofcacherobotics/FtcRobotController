@@ -91,7 +91,7 @@ android {
     // http://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.BuildType.html
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig signingConhistofigs.release
 
             ndk {
                 abiFilters "armeabi-v7a"
