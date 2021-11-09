@@ -5,6 +5,10 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 // See https://github.com/OpenFTC/EasyOpenCV/blob/master/doc/user_docs/camera_initialization_overview.md
+
+/**
+ * Finds areas of webcam feed with highest amount of yellow pixels, used for detecting boxes
+ */
 public class CustomPipeline extends OpenCvPipeline {
     public enum FreightPosition
     {
@@ -48,7 +52,7 @@ public class CustomPipeline extends OpenCvPipeline {
 
     private volatile FreightPosition position = FreightPosition.LEFT;
 
-    void inputToCb(Mat input) {
+    private void inputToCb(Mat input) {
         Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
         Core.extractChannel(YCrCb, Cb, 2);
     }

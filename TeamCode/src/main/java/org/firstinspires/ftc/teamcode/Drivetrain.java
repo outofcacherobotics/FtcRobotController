@@ -47,7 +47,7 @@ public class Drivetrain {
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    private boolean valid_power(double power) {
+    boolean valid_power(double power) {
         return 0 < power && power < MAX_POWER;
     }
 

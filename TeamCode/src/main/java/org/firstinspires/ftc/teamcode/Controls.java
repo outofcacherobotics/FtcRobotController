@@ -9,9 +9,13 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * This class WILL NOT be used in autonomous modes.
  */
 public class Controls {
-    private Gamepad gamepad;
-    private double left_front_power, right_front_power, left_back_power, right_back_power;
-    private String mode;
+    String mode;
+    Gamepad gamepad;
+
+    static final double dpad_power = 1.0;
+
+    double left_front_power, right_front_power, left_back_power, right_back_power;
+    double spinner_power;
 
     public Controls(Gamepad gamepad, String mode) {
         this.gamepad = gamepad;
@@ -32,7 +36,11 @@ public class Controls {
 
     public double getRightBackPower() { return right_back_power; };
 
+    public double getSpinnerPower() { return spinner_power; };
+
     public void update() {
+        updateSpinner();
+
         switch (mode) {
             case "simple":
                 updateSimple();
@@ -41,10 +49,30 @@ public class Controls {
         }
     }
 
+    private void updateSpinner() {
+        if (gamepad.y) {
+            spinner_power = 0.5;
+        }
+    }
+
     private void updateSimple() {
         float x = gamepad.left_stick_x;
         float y = gamepad.left_stick_y;
         float clockwise = gamepad.right_stick_x;
+
+        if (gamepad.dpad_right) {
+            x = 1;
+            y = 0;
+        } else if (gamepad.dpad_left) {
+            x = -1;
+            y = 0;
+        } else if (gamepad.dpad_up) {
+            x = 0;
+            y = 1;
+        } else if (gamepad.dpad_down) {
+            x = 0;
+            y = -1;
+        }
 
         left_front_power = y - x - clockwise;
         right_front_power = y - x + clockwise;
@@ -56,6 +84,20 @@ public class Controls {
         float x = gamepad.left_stick_x;
         float y = gamepad.left_stick_y;
         float clockwise = gamepad.right_stick_x;
+
+        if (gamepad.dpad_right) {
+            x = 1;
+            y = 0;
+        } else if (gamepad.dpad_left) {
+            x = -1;
+            y = 0;
+        } else if (gamepad.dpad_up) {
+            x = 0;
+            y = 1;
+        } else if (gamepad.dpad_down) {
+            x = 0;
+            y = -1;
+        }
 
         if (gamepad.right_bumper) {
             left_front_power = (y - x - clockwise)/2;

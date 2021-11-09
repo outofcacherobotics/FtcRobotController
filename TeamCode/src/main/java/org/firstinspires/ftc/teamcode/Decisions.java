@@ -15,6 +15,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 * Docs
 * https://first-tech-challenge.github.io/SkyStone/org/firstinspires/ftc/robotcore/external/tfod/package-summary.html
  * https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Java-Sample-TensorFlow-Object-Detection-Op-Mode
+ *
+ * Initializes Vuforia and TensorFlow, judge positions of objects in arena
 */
 public class Decisions {
     private String teamColor = "blue"; // Figure out how to dynamically set

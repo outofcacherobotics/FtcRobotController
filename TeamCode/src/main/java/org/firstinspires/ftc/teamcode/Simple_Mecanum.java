@@ -5,11 +5,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp
 public class Simple_Mecanum extends LinearOpMode {
-    private Drivetrain drivetrain;
-    private Controls controls;
+    Controls controls;
+    Drivetrain drivetrain;
+    FxMotors fxMotors;
 
     @Override
     public void runOpMode() {
+        this.controls = new Controls(
+                gamepad1,
+                "slowmode"
+        );
+
         this.drivetrain = new Drivetrain(
                 hardwareMap,
                 "frontLeft",
@@ -18,9 +24,9 @@ public class Simple_Mecanum extends LinearOpMode {
                 "backRight"
         );
 
-        this.controls = new Controls(
-            gamepad1, 
-            "slowmode"
+        this.fxMotors = new FxMotors(
+                hardwareMap,
+                "spinner"
         );
 
         waitForStart();
@@ -35,6 +41,10 @@ public class Simple_Mecanum extends LinearOpMode {
                     controls.getRightFrontPower(),
                     controls.getLeftBackPower(),
                     controls.getRightBackPower()
+                );
+
+                fxMotors.setSpinner(
+                        controls.getSpinnerPower()
                 );
 
                 telemetry.update();
