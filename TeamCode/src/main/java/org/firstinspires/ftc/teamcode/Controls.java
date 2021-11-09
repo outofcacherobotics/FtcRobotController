@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * This class WILL NOT be used in autonomous modes.
  */
 public class Controls {
-    String mode;
     Gamepad gamepad;
 
     static final double dpad_power = 1.0;
@@ -24,8 +23,6 @@ public class Controls {
         this.right_front_power = 0;
         this.left_back_power = 0;
         this.right_back_power = 0;
-
-        this.mode = mode;
     }
 
     public double getLeftFrontPower() { return left_front_power; };
@@ -40,44 +37,13 @@ public class Controls {
 
     public void update() {
         updateSpinner();
-
-        switch (mode) {
-            case "simple":
-                updateSimple();
-            case "slowmode":
-                updateSlowmode();
-        }
+        updateSlowmode();
     }
 
     private void updateSpinner() {
         if (gamepad.y) {
             spinner_power = 0.5;
         }
-    }
-
-    private void updateSimple() {
-        float x = gamepad.left_stick_x;
-        float y = gamepad.left_stick_y;
-        float clockwise = gamepad.right_stick_x;
-
-        if (gamepad.dpad_right) {
-            x = 1;
-            y = 0;
-        } else if (gamepad.dpad_left) {
-            x = -1;
-            y = 0;
-        } else if (gamepad.dpad_up) {
-            x = 0;
-            y = 1;
-        } else if (gamepad.dpad_down) {
-            x = 0;
-            y = -1;
-        }
-
-        left_front_power = y - x - clockwise;
-        right_front_power = y - x + clockwise;
-        left_back_power = y + x - clockwise;
-        right_back_power = y + x + clockwise;
     }
 
     private void updateSlowmode() {

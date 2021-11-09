@@ -4,4 +4,4 @@
 - Right stick: horizontal movement controls rotation
 - Right bumper: Slowmode (drivetrain at half power)
 - Y button: toggles the spinner motor
-- DPAD: moves robot straight up, down, left, right
+- DPAD: moves robot straight up, down, left, right (locks direction)

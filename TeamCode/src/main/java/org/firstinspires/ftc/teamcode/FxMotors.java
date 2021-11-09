@@ -11,12 +11,12 @@ public class FxMotors {
 
     public FxMotors(
             HardwareMap hardwareMap,
-            spinner_name,
+            String spinner_name
     ) {
         this.spinner = hardwareMap.get(DcMotor.class, spinner_name);
     }
 
     public void setSpinner(double power) {
-        spinner.setPower(power)
+        spinner.setPower(power);
     }
 }

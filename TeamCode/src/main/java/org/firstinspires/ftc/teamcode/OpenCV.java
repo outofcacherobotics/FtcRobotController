@@ -4,6 +4,10 @@ import org.opencv.core.Core;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 // See https://github.com/OpenFTC/EasyOpenCV/blob/master/doc/user_docs/camera_initialization_overview.md
+
+/**
+ * Initializes OpenCV
+ */
 public class OpenCV {
     OpenCvWebcam webcam;
 

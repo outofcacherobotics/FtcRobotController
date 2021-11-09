@@ -12,6 +12,9 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 // run: https://stackoverflow.com/questions/11527941/java-packages-cannot-find-symbol
+/**
+ * Sets online status of robot for website
+ */
 class Parsetest {
     public static void main(String[] args) {
         Status robotStatus = new Status();

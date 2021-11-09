@@ -39,6 +39,7 @@
  /**
   * Docs
   * https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-an-External-Webcam-with-Control-Hub
+  * Initializes webcam
   */
  public class Webcam {
      static final String TAG = "Webcam Sample";

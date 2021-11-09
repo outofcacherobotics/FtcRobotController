@@ -8,9 +8,9 @@ package org.firstinspires.ftc.teamcode;
 public class Localizer {
     double[] currentLocation;
 
+    public Localizer() {};
+
     public void setCurrentLocation(double[] currentLocation) {
         this.currentLocation = currentLocation;
     }
-
-    public Localizer() {};
 }
