@@ -14,6 +14,7 @@ public class FxMotors {
             String spinner_name
     ) {
         this.spinner = hardwareMap.get(DcMotor.class, spinner_name);
+        this.spinner.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void setSpinner(double power) {
