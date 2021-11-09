@@ -41,8 +41,10 @@ public class Controls {
     }
 
     private void updateSpinner() {
-        if (gamepad.y) {
+        if (gamepad.a) {
             spinner_power = 0.5;
+        } else if (gamepad.b) {
+            spinner_power = -0.5;
         }
     }
 
