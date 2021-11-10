@@ -23,6 +23,7 @@ public class Decisions_Auto extends LinearOpMode {
 
         pathController.initializeHardware();
 
+        // ATM, Decisons (TFLite and Vuforia) vs OpenCV is either-or
         decisions = new Decisions(hardwareMap, "blue");
 
         waitForStart();
