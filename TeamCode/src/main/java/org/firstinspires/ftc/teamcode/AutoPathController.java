@@ -77,6 +77,8 @@ public class AutoPathController {
         currentAngle = setupAngle;
     }
 
+    public LocationHistory getHistory() { return history; };
+
     public void setZeroPowerBehavior() {
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

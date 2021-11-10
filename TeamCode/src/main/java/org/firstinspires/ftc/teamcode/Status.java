@@ -11,19 +11,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
 
-// run: https://stackoverflow.com/questions/11527941/java-packages-cannot-find-symbol
 /**
  * Sets online status of robot for website
  */
-class Parsetest {
-    public static void main(String[] args) {
-        Status robotStatus = new Status();
-        boolean robotRunning = robotStatus.getRobotStatus();
-        System.out.println(robotRunning);
-    }
-}
-
-// Read something like this: https://openjdk.java.net/groups/net/httpclient/recipes.html
 public class Status {
     static final String API_URL = "https://us-central1-robotics-api.cloudfunctions.net";
     // String API_KEY = System.getenv("outofcache_api_key");
