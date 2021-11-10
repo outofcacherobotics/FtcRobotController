@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class Decisions_Auto extends LinearOpMode {
     AutoPathController pathController;
     Decisions decisions;
+    int duckRegion
 
     @Override
     public void runOpMode() {
@@ -32,13 +33,13 @@ public class Decisions_Auto extends LinearOpMode {
             pathController.setZeroPowerBehavior();
 
             while (opModeIsActive()) {
-                int duckRegion;
                 double[] previousCoords = pathController.getHistory().getPreviousCoordinate();
                 if (decisions.idealCoords(previousCoords)) {
                     duckRegion = decisions.getDecision(previousCoords);
                 }
 
-                // duckRegion 1 if left, 2 if middle, 3 if right
+                // duckRegion 1 if left, 2 if middle, 3 if right,
+                // store for later use
 
                 // Drive forward 20 cm
                 pathController.drive(20, 20, 5);

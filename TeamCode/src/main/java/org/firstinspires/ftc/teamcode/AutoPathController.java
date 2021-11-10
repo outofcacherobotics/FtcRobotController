@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
@@ -15,12 +16,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;
 
-    LocationHistory history;
-
-    ModernRoboticsI2cGyro gyro;
+    Localizer localizer;
 
     // https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/bosch/BNO055IMUImpl.html
     BNO055IMU imu;
+    Orientation angles;
 
     // Orientation relative to the top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
@@ -79,13 +79,13 @@ public class AutoPathController {
 
         switch (setupPosition) {
             case "blueBottom":
-                history.pushCoords(BLUE_BOTTOM_STARTING_COORDS);
+                localizer.history.pushCoords(BLUE_BOTTOM_STARTING_COORDS);
             case "blueTop":
-                history.pushCoords(BLUE_TOP_STARTING_COORDS);
+                localizer.history.pushCoords(BLUE_TOP_STARTING_COORDS);
             case "redBottom":
-                history.pushCoords(RED_BOTTOM_STARTING_COORDS);
+                localizer.history.pushCoords(RED_BOTTOM_STARTING_COORDS);
             case "redTop":
-                history.pushCoords(RED_TOP_STARTING_COORDS);
+                localizer.history.pushCoords(RED_TOP_STARTING_COORDS);
         }
         
         currentAngle = setupAngle;
@@ -155,22 +155,17 @@ public class AutoPathController {
     /**
      *  Method to drive with a gyro disabled.
      *
-     * @param rightCM   Distance (in cm) to move left from current position.
-     * @param leftCM   Distance (in cm) to move right from current position.
+     * @param rightCM   Distance (in cm) to move left motors from current position.
+     * @param leftCM   Distance (in cm) to move right motors from current position.
      */
-    public void drive(double leftCM, double rightCM, double timeoutS) {
-        // For now, only straightline/rotating allowed
-        if (Math.abs(leftCM) != Math.abs(rightCM)) {
-            return;
-        }
+    public void drive(double distance, double timeoutS) {
+        // For now, only straightline allowed
+        int counts = (int) (distance * PULSES_PER_CM);
 
-        double leftCounts = (int) (leftCM * PULSES_PER_CM);
-        double rightCounts = (int) (rightCM * PULSES_PER_CM);
-
-        int newFrontLeftTarget = left_front.getCurrentPosition() + (int)leftCounts;
-        int newFrontRightTarget = right_front.getCurrentPosition() + (int)rightCounts;
-        int newBackLeftTarget = left_back.getCurrentPosition() + (int)leftCounts;
-        int newBackRightTarget = right_back.getCurrentPosition() + (int)rightCounts;
+        int newFrontLeftTarget = left_front.getCurrentPosition() + counts;
+        int newFrontRightTarget = right_front.getCurrentPosition() + counts;
+        int newBackLeftTarget = left_back.getCurrentPosition() + counts;
+        int newBackRightTarget = right_back.getCurrentPosition() + counts;
 
         left_front.setTargetPosition(newFrontLeftTarget);
         right_front.setTargetPosition(newFrontRightTarget);
@@ -178,7 +173,6 @@ public class AutoPathController {
         right_back.setTargetPosition(newBackRightTarget);
 
         setRunToPosition();
-
         runtime.reset();
         setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
 
@@ -195,16 +189,16 @@ public class AutoPathController {
 
         // Append to history (if it is straightline)
         if (leftCM > 0 && leftCM == rightCM) {
-            double[] previousCoordinate = history.getPreviousCoordinate();
+            double[] previousCoordinate = localizer.history.getPreviousCoordinate();
             double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
             double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
             double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-            history.pushCoords(coordinateEntry);
+            localizer.history.pushCoords(coordinateEntry);
         } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
-            double[] previousCoordinate = history.getPreviousCoordinate();
+            double[] previousCoordinate = localizer.history.getPreviousCoordinate();
             // Find out how to determine rotation angle from leftCM and rightCM
             double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
-            history.pushCoords(coordinateEntry);
+            localizer.history.pushCoords(coordinateEntry);
         }
     }
 
@@ -220,10 +214,15 @@ public class AutoPathController {
     /**
      *  Method to drive with a gyro enabled.
      *
-     * @param distance   Distance (in cm) to move from current position.  Negative distance means move backwards.
+     * @param distance   Distance (in cm) to move forward from current position.
      */
     public void gyroDrive(double distance) {
-        double max, error, steer, leftSpeed, rightSpeed;
+        double max;
+        double error;
+        double steer;
+        double leftSpeed;
+        double rightSpeed;
+
         int moveCounts = (int)(distance * PULSES_PER_CM);
         int newFrontLeftTarget = left_front.getCurrentPosition() + moveCounts;
         int newFrontRightTarget = right_front.getCurrentPosition() + moveCounts;
@@ -265,11 +264,11 @@ public class AutoPathController {
         setRunUsingEncoder();
 
         // Append to history
-        double[] previousCoordinate = history.getPreviousCoordinate();
+        double[] previousCoordinate = localizer.history.getPreviousCoordinate();
         double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
         double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
         double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-        history.pushCoords(coordinateEntry);
+        localizer.history.pushCoords(coordinateEntry);
     }
 
     /**
@@ -280,14 +279,12 @@ public class AutoPathController {
      *                   If a relative angle is required, add/subtract from current heading.
      */
     public void gyroTurn(double relativeAngle) {
-        while (!onHeading(currentAngle)) {
-
-        }
+        while (!onHeading(currentAngle)) {}
 
         currentAngle += relativeAngle;
-        double[] previousCoordinate = history.getPreviousCoordinate();
+        double[] previousCoordinate = localizer.history.getPreviousCoordinate();
         double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
-        history.pushCoords(coordinateEntry);
+        localizer.history.pushCoords(coordinateEntry);
     }
 
     /**
@@ -359,7 +356,7 @@ public class AutoPathController {
         double xPos = 0;
         double yPos = 0;
 
-        for (double[] entry : history.getHistory()) {
+        for (double[] entry : localizer.history.getHistory()) {
             rot += entry[0];
             xPos += entry[1];
             yPos += entry[2];

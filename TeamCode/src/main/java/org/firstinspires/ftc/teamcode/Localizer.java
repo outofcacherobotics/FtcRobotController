@@ -6,11 +6,7 @@ package org.firstinspires.ftc.teamcode;
  * Will implement Vuforia localization
  */
 public class Localizer {
-    double[] currentLocation;
+    public LocationHistory history;
 
     public Localizer() {};
-
-    public void setCurrentLocation(double[] currentLocation) {
-        this.currentLocation = currentLocation;
-    }
 }
