@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.location.Location;
-
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.Arrays;
 
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
@@ -20,6 +18,9 @@ public class AutoPathController {
     LocationHistory history;
 
     ModernRoboticsI2cGyro gyro;
+
+    // https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/bosch/BNO055IMUImpl.html
+    BNO055IMU imu;
 
     // Orientation relative to the top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
@@ -43,6 +44,19 @@ public class AutoPathController {
     static final double PULSES_PER_REVOLUTION = 384.5;
     static final double WHEEL_DIAMETER_CM = 8.7;
     static final double PULSES_PER_CM = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_CM * 3.1415);
+
+    public void initIMU(HardwareMap hardwareMap) {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+    }
 
     public AutoPathController(
             boolean gyroEnabled,
