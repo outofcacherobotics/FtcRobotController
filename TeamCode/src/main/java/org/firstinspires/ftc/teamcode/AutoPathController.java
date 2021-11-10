@@ -22,7 +22,7 @@ public class AutoPathController {
     BNO055IMU imu;
     Orientation angles;
 
-    // Orientation relative to the top of the field.
+    // Orientation relative to signingthe top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
     double currentAngle;
     static final ElapsedTime runtime = new ElapsedTime();
