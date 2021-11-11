@@ -34,14 +34,12 @@ public class Simple_Auto extends LinearOpMode {
             // Probably not necessary
             pathController.setZeroPowerBehavior();
 
-            while (opModeIsActive()) {
-                pathController.update();
+            pathController.update();
 
-                // Drive forward 20 cm
-                pathController.gyroDrive(20);
+            // Drive forward 20 cm
+            pathController.gyroDrive(60);
 
-                telemetry.update();
-            }
+            telemetry.update();
         }
     }
 }

@@ -16,7 +16,10 @@ import java.util.Arrays;
  * View HardwarePushbot for encoder use
  */
 public class Drivetrain {
-    DcMotor left_front, right_front, left_back, right_back;
+    DcMotor left_front = null;
+    DcMotor right_front = null;
+    DcMotor left_back = null;
+    DcMotor right_back = null;
 
     // History of movements, used by Localizer
     Localizer localizer;
@@ -39,6 +42,8 @@ public class Drivetrain {
 
         right_front.setDirection(DcMotor.Direction.REVERSE);
         right_back.setDirection(DcMotor.Direction.REVERSE);
+
+        setAllMotors(0, 0, 0, 0);
 
         this.telemetry = telemetry;
 

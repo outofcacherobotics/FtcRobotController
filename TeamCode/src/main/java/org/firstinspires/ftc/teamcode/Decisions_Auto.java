@@ -39,7 +39,7 @@ public class Decisions_Auto extends LinearOpMode {
             // Probably not necessary
             pathController.setZeroPowerBehavior();
 
-            while (opModeIsActive()) {
+            if (opModeIsActive()) {
                 pathController.update();
 
                 double[] previousCoords = pathController.getHistory().getPreviousCoords();

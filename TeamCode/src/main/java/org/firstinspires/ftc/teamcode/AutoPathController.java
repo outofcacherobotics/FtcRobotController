@@ -82,6 +82,8 @@ public class AutoPathController {
     public void update() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         gravity = imu.getGravity();
+        telemetry.addData("Angles: ", angles.toString());
+        telemetry.addData("Gravity: ", gravity.toString());
     }
 
     public void initIMU(HardwareMap hardwareMap) {
@@ -250,32 +252,33 @@ public class AutoPathController {
         right_back.setTargetPosition(newBackRightTarget);
 
         setRunToPosition();
-
         setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
 
-//        while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
-//            error = getError(currentAngle);
-//            steer = getSteer(error, P_DRIVE_COEFF);
-//
-//            if (distance < 0)
-//                steer *= -1.0;
-//
-//            leftSpeed = AUTO_DRIVE_SPEED - steer;
-//            rightSpeed = AUTO_DRIVE_SPEED + steer;
-//
-//            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-//            if (max > 1.0) {
-//                leftSpeed /= max;
-//                rightSpeed /= max;
-//            }
-//
-//            setLeftAndRightPower(leftSpeed, rightSpeed);
-//        }
+        while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
+            error = getError(currentAngle);
+            steer = getSteer(error, P_DRIVE_COEFF);
+
+            if (distance < 0)
+                steer *= -1.0;
+
+            leftSpeed = AUTO_DRIVE_SPEED - steer;
+            rightSpeed = AUTO_DRIVE_SPEED + steer;
+
+            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+            if (max > 1.0) {
+                leftSpeed /= max;
+                rightSpeed /= max;
+            }
+
+            setLeftAndRightPower(leftSpeed, rightSpeed);
+        }
 
         setZeroPower();
         setRunUsingEncoder();
 
         // Append to history
+        // Look into sending this into another thread,
+        // takes too long and has potential to error out.
 //        telemetry.addData("history: ", localizer.locationHistory.toString());
 //        double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
 //        double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
