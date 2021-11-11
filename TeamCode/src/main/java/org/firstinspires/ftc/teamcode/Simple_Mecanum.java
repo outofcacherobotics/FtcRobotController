@@ -12,8 +12,7 @@ public class Simple_Mecanum extends LinearOpMode {
     @Override
     public void runOpMode() {
         this.controls = new Controls(
-                gamepad1,
-                "slowmode"
+                gamepad1
         );
 
         this.drivetrain = new Drivetrain(
@@ -47,6 +46,7 @@ public class Simple_Mecanum extends LinearOpMode {
                         controls.getSpinnerPower()
                 );
 
+                telemetry.addData("Spinner power", controls.getSpinnerPower());
                 telemetry.update();
             }
         }

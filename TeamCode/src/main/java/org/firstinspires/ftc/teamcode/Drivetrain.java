@@ -29,13 +29,13 @@ public class Drivetrain {
             String left_back_name,
             String right_back_name
     ) {
-        this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
-        this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
-        this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
-        this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
+        left_front = hardwareMap.get(DcMotor.class, left_front_name);
+        right_front = hardwareMap.get(DcMotor.class, right_front_name);
+        left_back = hardwareMap.get(DcMotor.class, left_back_name);
+        right_back = hardwareMap.get(DcMotor.class, right_back_name);
 
-        this.right_front.setDirection(DcMotor.Direction.REVERSE);
-        this.right_back.setDirection(DcMotor.Direction.REVERSE);
+        right_front.setDirection(DcMotor.Direction.REVERSE);
+        right_back.setDirection(DcMotor.Direction.REVERSE);
 
         setZeroPowerBehavior();
     }

@@ -3,9 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Simple auto", group="Autos")
+@Autonomous(name="Simple Auto", group="Autos")
 public class Simple_Auto extends LinearOpMode {
-    private AutoPathController pathController;
+    AutoPathController pathController;
+    FxMotors fxMotors;
 
     @Override
     public void runOpMode() {
@@ -21,6 +22,11 @@ public class Simple_Auto extends LinearOpMode {
 
         pathController.initHardware();
 
+        fxMotors = new FxMotors(
+                hardwareMap,
+                "CarouselSpinner"
+        );
+
         waitForStart();
         if (opModeIsActive()) {
             // Probably not necessary
@@ -30,7 +36,7 @@ public class Simple_Auto extends LinearOpMode {
                 pathController.update();
 
                 // Drive forward 20 cm
-                pathController.drive(20, 20, 5);
+                pathController.gyroDrive(20);
 
                 telemetry.update();
             }

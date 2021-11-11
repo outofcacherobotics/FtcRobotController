@@ -16,7 +16,7 @@ public class Controls {
     double left_front_power, right_front_power, left_back_power, right_back_power;
     double spinner_power;
 
-    public Controls(Gamepad gamepad, String mode) {
+    public Controls(Gamepad gamepad) {
         this.gamepad = gamepad;
 
         this.left_front_power = 0;
@@ -42,9 +42,11 @@ public class Controls {
 
     private void updateSpinner() {
         if (gamepad.a) {
-            spinner_power = 0.5;
+            spinner_power = (float)0.95;
         } else if (gamepad.b) {
-            spinner_power = -0.5;
+            spinner_power = (float)-0.95;
+        } else {
+            spinner_power = (float)0;
         }
     }
 
@@ -56,27 +58,34 @@ public class Controls {
         if (gamepad.dpad_right) {
             x = 1;
             y = 0;
-        } else if (gamepad.dpad_left) {
+        }
+
+        if (gamepad.dpad_left) {
             x = -1;
             y = 0;
-        } else if (gamepad.dpad_up) {
-            x = 0;
-            y = 1;
-        } else if (gamepad.dpad_down) {
+        }
+
+        if (gamepad.dpad_up) {
             x = 0;
             y = -1;
         }
 
-        if (gamepad.right_bumper) {
-            left_front_power = (y - x - clockwise)/2;
-            right_front_power = (y - x + clockwise)/2;
-            left_back_power = (y + x - clockwise)/2;
-            right_back_power = (y + x + clockwise)/2;
-        } else {
-            left_front_power = y - x - clockwise;
-            right_front_power = y - x + clockwise;
-            left_back_power = y + x - clockwise;
-            right_back_power = y + x + clockwise;
+        if (gamepad.dpad_down) {
+            x = 0;
+            y = 1;
         }
+
+        // first operator is strafe direction, second operator is turn direction
+        left_front_power = y - x - clockwise;
+        right_front_power = y + x + clockwise;
+        left_back_power = y + x - clockwise;
+        right_back_power = y - x + clockwise;
+        
+        if (gamepad.right_bumper) {
+            left_front_power /= 2;
+            right_front_power /= 2;
+            left_back_power /= 2;
+            right_back_power /= 2;
+        } 
     }
 }

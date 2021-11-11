@@ -20,7 +20,7 @@ import java.util.Locale;
 
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
- * where a pre defined path needs to be executed.
+ * where a predefined path needs to be executed.
  */
 public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;

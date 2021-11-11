@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 // History of movements, used by Localizer.
@@ -15,9 +16,8 @@ public class LocationHistory {
     public static final double[] RED_BOTTOM_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 33.5 };
     public static final double[] RED_TOP_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 81.0 };
 
-
-    public double[] initialCoords;
-    public double[][] history;
+    public double[] initialCoords = new double[3];
+    public double[][] history = {{}};
 
     public LocationHistory(String setupPosition) {
         switch (setupPosition) {
@@ -44,7 +44,7 @@ public class LocationHistory {
 
     public void pushCoords(double[] newCoords) {
         history = Arrays.copyOf(history, history.length + 1);
-        history[history.length - 1] = newCoords;
+        history[history.length] = newCoords;
     };
 
     // Creates image representing history 2D

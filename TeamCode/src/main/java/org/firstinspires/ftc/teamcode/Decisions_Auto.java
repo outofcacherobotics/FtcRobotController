@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Decisions auto", group="Autos")
+@Autonomous(name="Decisions Auto", group="Autos")
 public class Decisions_Auto extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
@@ -29,7 +29,7 @@ public class Decisions_Auto extends LinearOpMode {
             "CarouselSpinner"
         );
 
-        // ATM, Decisons (TFLite and Vuforia) vs OpenCV is either-or
+        // ATM, Decisions (TFLite and Vuforia) vs OpenCV is either-or
         decisions = new Decisions(hardwareMap, "blue");
 
         waitForStart();
@@ -49,7 +49,7 @@ public class Decisions_Auto extends LinearOpMode {
                 // store for later use
 
                 // Drive forward 20 cm
-                pathController.drive(20, 20, 5);
+                pathController.gyroDrive(20);
 
                 telemetry.update();
             }
