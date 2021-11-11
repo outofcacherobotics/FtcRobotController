@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-
-<Robot type="FirstInspires-FTC">
-    <goBILDA5203SeriesMotor name="left_front" port="" />
-    <goBILDA5203SeriesMotor name="right_front" port="" />
-    <goBILDA5203SeriesMotor name="left_back" port="" />
-    <goBILDA5203SeriesMotor name="right_back" port="" />
-    <goBILDA5203SeriesMotor name="spinner" port="" />
-</Robot>

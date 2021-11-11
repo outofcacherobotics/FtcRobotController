@@ -26,7 +26,7 @@ public class Simple_Mecanum extends LinearOpMode {
 
         this.fxMotors = new FxMotors(
                 hardwareMap,
-                "spinner"
+                "CarouselSpinner"
         );
 
         waitForStart();
