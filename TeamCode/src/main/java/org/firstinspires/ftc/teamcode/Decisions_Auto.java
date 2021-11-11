@@ -12,7 +12,7 @@ public class Decisions_Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        this.pathController = new AutoPathController(
+        pathController = new AutoPathController(
                 hardwareMap,
                 "frontLeft",
                 "frontRight",

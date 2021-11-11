@@ -18,7 +18,7 @@ public class Drivetrain {
     DcMotor left_front, right_front, left_back, right_back;
 
     // History of movements, used by Localizer
-    LocationHistory history;
+    Localizer localizer;
 
     double MAX_POWER = 1.0;
 

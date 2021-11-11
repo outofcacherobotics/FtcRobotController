@@ -17,7 +17,7 @@ public class LocationHistory {
     public static final double[] RED_TOP_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 81.0 };
 
     public double[] initialCoords = new double[3];
-    public double[][] history = {{}};
+    public ArrayList<double[]> history = new ArrayList<double[]>();
 
     public LocationHistory(String setupPosition) {
         switch (setupPosition) {
@@ -36,15 +36,14 @@ public class LocationHistory {
         }
     }
 
-    public double[][] getHistory() { return history; };
+    public ArrayList<double[]> getHistory() { return history; };
 
-    public int getHistoryLength() { return history.length; };
+    public int getHistoryLength() { return history.size(); };
 
-    public double[] getPreviousCoordinate() { return history[getHistoryLength() - 1]; };
+    public double[] getPreviousCoordinate() { return history.get(history.size() - 1); };
 
     public void pushCoords(double[] newCoords) {
-        history = Arrays.copyOf(history, history.length + 1);
-        history[history.length] = newCoords;
+        history.add(newCoords);
     };
 
     // Creates image representing history 2D

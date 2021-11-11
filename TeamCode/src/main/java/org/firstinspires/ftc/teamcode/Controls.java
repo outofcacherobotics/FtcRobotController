@@ -56,23 +56,23 @@ public class Controls {
         float clockwise = gamepad.right_stick_x;
 
         if (gamepad.dpad_right) {
-            x = 1;
+            x = (float)dpad_power;
             y = 0;
         }
 
         if (gamepad.dpad_left) {
-            x = -1;
+            x = -(float)dpad_power;
             y = 0;
         }
 
         if (gamepad.dpad_up) {
             x = 0;
-            y = -1;
+            y = -(float)dpad_power;
         }
 
         if (gamepad.dpad_down) {
             x = 0;
-            y = 1;
+            y = (float)dpad_power;
         }
 
         // first operator is strafe direction, second operator is turn direction

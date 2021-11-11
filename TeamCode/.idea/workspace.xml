@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="287b51f1-4c13-44b9-9875-e26ed92fa7d8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/AutoPathController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/AutoPathController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Controls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Controls.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Decisions_Auto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Decisions_Auto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Drivetrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Drivetrain.java" afterDir="false" />
@@ -48,7 +47,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
   <component name="RunManager">
