@@ -114,6 +114,7 @@ android {
 
     packagingOptions {
         pickFirst '**/*.so'
+        exclude 'META-INF/*.md'
     }
     sourceSets.main {
         jni.srcDirs = []

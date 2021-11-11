@@ -124,7 +124,7 @@ public class Decisions {
 
     public boolean idealCoords(double[] currentCoords) {
         return (Math.abs(currentCoords[0] - IDEAL_CAMERA_COORDS[0]) > POSITION_OFFSET ||
-                Math.abs(currentCoords[1] - IDEAL_CAMERA_COORDS[1]) > POSITION_OFFSET));
+                Math.abs(currentCoords[1] - IDEAL_CAMERA_COORDS[1]) > POSITION_OFFSET);
     }
 
     /**

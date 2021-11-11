@@ -17,7 +17,7 @@ apply from: '../build.dependencies.gradle'
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation files('lib/opencv-454.jar')
+//    implementation files('lib/opencv-454.jar')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.9.5'

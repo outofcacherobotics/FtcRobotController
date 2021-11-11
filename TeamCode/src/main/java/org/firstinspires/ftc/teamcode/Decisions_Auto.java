@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Autonomous(name="Decisions auto", group="Autos")
 public class Decisions_Auto extends LinearOpMode {
     AutoPathController pathController;
+    FxMotors fxMotors;
     Decisions decisions;
-    int duckRegion
+    int duckRegion;
 
     @Override
     public void runOpMode() {
         this.pathController = new AutoPathController(
-                false,
                 hardwareMap,
                 "frontLeft",
                 "frontRight",
@@ -22,7 +22,12 @@ public class Decisions_Auto extends LinearOpMode {
                 90
         );
 
-        pathController.initializeHardware();
+        pathController.initHardware();
+
+        fxMotors = new FxMotors(
+            hardwareMap,
+            "CarouselSpinner"
+        );
 
         // ATM, Decisons (TFLite and Vuforia) vs OpenCV is either-or
         decisions = new Decisions(hardwareMap, "blue");
@@ -33,6 +38,8 @@ public class Decisions_Auto extends LinearOpMode {
             pathController.setZeroPowerBehavior();
 
             while (opModeIsActive()) {
+                pathController.update();
+
                 double[] previousCoords = pathController.getHistory().getPreviousCoordinate();
                 if (decisions.idealCoords(previousCoords)) {
                     duckRegion = decisions.getDecision(previousCoords);

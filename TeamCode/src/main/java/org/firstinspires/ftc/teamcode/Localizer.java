@@ -6,7 +6,9 @@ package org.firstinspires.ftc.teamcode;
  * Will implement Vuforia localization
  */
 public class Localizer {
-    public LocationHistory history;
+    public LocationHistory locationHistory;
 
-    public Localizer() {};
+    public Localizer(String setupPosition) {
+        locationHistory = new LocationHistory(setupPosition);
+    };
 }

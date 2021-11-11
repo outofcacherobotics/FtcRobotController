@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import java.util.Locale;
 
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
@@ -21,19 +30,15 @@ public class AutoPathController {
     // https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/bosch/BNO055IMUImpl.html
     BNO055IMU imu;
     Orientation angles;
+    Acceleration gravity;
 
     // Orientation relative to signingthe top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
     double currentAngle;
+
     static final ElapsedTime runtime = new ElapsedTime();
-    static final double FIELD_HEIGHT_CM = 365.7;
-    static final double FIELD_WIDTH_CM = 365.7;
 
-    static final double[] BLUE_BOTTOM_STARTING_COORDS = { 11.5, 33.5 };
-    static final double[] BLUE_TOP_STARTING_COORDS = { 11.5, 81.0 };
-    static final double[] RED_BOTTOM_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 33.5 };
-    static final double[] RED_TOP_STARTING_COORDS = { FIELD_WIDTH_CM - 11.5, 81.0 };
-
+    // Drive speed constants
     static final double AUTO_DRIVE_SPEED = 0.7;
     static final double AUTO_TURN_SPEED = 0.5;
 
@@ -41,9 +46,36 @@ public class AutoPathController {
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
 
+    // Motor encoder configuration constants
     static final double PULSES_PER_REVOLUTION = 384.5;
     static final double WHEEL_DIAMETER_CM = 8.7;
     static final double PULSES_PER_CM = PULSES_PER_REVOLUTION / (WHEEL_DIAMETER_CM * 3.1415);
+
+    public AutoPathController(
+            HardwareMap hardwareMap,
+            String left_front_name,
+            String right_front_name,
+            String left_back_name,
+            String right_back_name,
+            String setupPosition,
+            double setupAngle
+    ) {
+        initIMU(hardwareMap);
+
+        this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
+        this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
+        this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
+        this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
+
+        localizer = new Localizer(setupPosition);
+        
+        currentAngle = setupAngle;
+    }
+
+    public void update() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        gravity = imu.getGravity();
+    }
 
     public void initIMU(HardwareMap hardwareMap) {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -56,42 +88,8 @@ public class AutoPathController {
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
     }
-
-    public AutoPathController(
-            boolean gyroEnabled,
-            HardwareMap hardwareMap,
-            String left_front_name,
-            String right_front_name,
-            String left_back_name,
-            String right_back_name,
-            String setupPosition,
-            double setupAngle
-    ) {
-        if (gyroEnabled) {
-            this.gyro = (ModernRoboticsI2cGyro)hardwareMap.gyroSensor.get("gyro");
-        }
-
-        this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
-        this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
-        this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
-        this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
-
-        switch (setupPosition) {
-            case "blueBottom":
-                localizer.history.pushCoords(BLUE_BOTTOM_STARTING_COORDS);
-            case "blueTop":
-                localizer.history.pushCoords(BLUE_TOP_STARTING_COORDS);
-            case "redBottom":
-                localizer.history.pushCoords(RED_BOTTOM_STARTING_COORDS);
-            case "redTop":
-                localizer.history.pushCoords(RED_TOP_STARTING_COORDS);
-        }
-        
-        currentAngle = setupAngle;
-    }
-
-    public LocationHistory getHistory() { return history; };
 
     public void setZeroPowerBehavior() {
         left_front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -100,20 +98,20 @@ public class AutoPathController {
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void initializeHardware() {
+    public void initHardware() {
         setStopAndResetEncoder();
 
         setRunUsingEncoder();
     }
 
-    public void initializeHardwareWithGyro() {
+    public void initHardwareWithGyro() {
         setStopAndResetEncoder();
 
-        gyro.calibrate();
+//        gyro.calibrate();
 
         setRunUsingEncoder();
 
-        gyro.resetZAxisIntegrator();
+//        gyro.resetZAxisIntegrator();
     }
 
     public void setStopAndResetEncoder() {
@@ -158,14 +156,15 @@ public class AutoPathController {
      * @param rightCM   Distance (in cm) to move left motors from current position.
      * @param leftCM   Distance (in cm) to move right motors from current position.
      */
-    public void drive(double distance, double timeoutS) {
+    public void drive(double rightCM, double leftCM, double timeoutS) {
         // For now, only straightline allowed
-        int counts = (int) (distance * PULSES_PER_CM);
+        int leftCounts = (int) (leftCM * PULSES_PER_CM);
+        int rightCounts = (int) (rightCM * PULSES_PER_CM);
 
-        int newFrontLeftTarget = left_front.getCurrentPosition() + counts;
-        int newFrontRightTarget = right_front.getCurrentPosition() + counts;
-        int newBackLeftTarget = left_back.getCurrentPosition() + counts;
-        int newBackRightTarget = right_back.getCurrentPosition() + counts;
+        int newFrontLeftTarget = left_front.getCurrentPosition() + leftCounts;
+        int newFrontRightTarget = right_front.getCurrentPosition() + rightCounts;
+        int newBackLeftTarget = left_back.getCurrentPosition() + leftCounts;
+        int newBackRightTarget = right_back.getCurrentPosition() + rightCounts;
 
         left_front.setTargetPosition(newFrontLeftTarget);
         right_front.setTargetPosition(newFrontRightTarget);
@@ -189,16 +188,17 @@ public class AutoPathController {
 
         // Append to history (if it is straightline)
         if (leftCM > 0 && leftCM == rightCM) {
-            double[] previousCoordinate = localizer.history.getPreviousCoordinate();
+            double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
             double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
             double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
             double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-            localizer.history.pushCoords(coordinateEntry);
+            localizer.locationHistory.pushCoords(coordinateEntry);
         } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
-            double[] previousCoordinate = localizer.history.getPreviousCoordinate();
+            // Not recommended for rotation, instead use @rotate with a relative angle.
+            double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
             // Find out how to determine rotation angle from leftCM and rightCM
             double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
-            localizer.history.pushCoords(coordinateEntry);
+            localizer.locationHistory.pushCoords(coordinateEntry);
         }
     }
 
@@ -208,7 +208,11 @@ public class AutoPathController {
      * @param relativeAngle Angle relative to currentAngle that robot is to turn.
      */
     public void rotate(double relativeAngle) {
-        // Test tomorrow
+        // NOT IMPLEMENTED
+        // Convert angle to inches
+        double left = 0.0;
+        double right = 0.0;
+        drive(left, right, 4.0);
     }
 
     /**
@@ -217,6 +221,8 @@ public class AutoPathController {
      * @param distance   Distance (in cm) to move forward from current position.
      */
     public void gyroDrive(double distance) {
+        verifyMovement(distance);
+
         double max;
         double error;
         double steer;
@@ -264,11 +270,11 @@ public class AutoPathController {
         setRunUsingEncoder();
 
         // Append to history
-        double[] previousCoordinate = localizer.history.getPreviousCoordinate();
+        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
         double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
         double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
         double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-        localizer.history.pushCoords(coordinateEntry);
+        localizer.locationHistory.pushCoords(coordinateEntry);
     }
 
     /**
@@ -282,9 +288,9 @@ public class AutoPathController {
         while (!onHeading(currentAngle)) {}
 
         currentAngle += relativeAngle;
-        double[] previousCoordinate = localizer.history.getPreviousCoordinate();
+        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
         double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
-        localizer.history.pushCoords(coordinateEntry);
+        localizer.locationHistory.pushCoords(coordinateEntry);
     }
 
     /**
@@ -304,13 +310,12 @@ public class AutoPathController {
         setLeftAndRightPower(0, 0);
     }
 
-    boolean onHeading(double angle) {
+    public boolean onHeading(double angle) {
         double error, steer, leftSpeed, rightSpeed;
         boolean onTarget = false;
 
         error = getError(angle);
         if (Math.abs(error) <= HEADING_THRESHOLD) {
-            steer = 0.0;
             leftSpeed = 0.0;
             rightSpeed = 0.0;
             onTarget = true;
@@ -327,12 +332,12 @@ public class AutoPathController {
 
     /**
      * getError determines the error between the target angle and the robot's current heading
-     * @param   targetAngle  Desired angle (relative to global reference established at last Gyro Reset).
+     * @param   angle  Desired angle (relative to global reference established at last Gyro Reset).
      * @return  error angle: Degrees in the range +/- 180. Centered on the robot's frame of reference
      *          +ve error means the robot should turn LEFT (CCW) to reduce error.
      */
-    public double getError(double targetAngle) {
-        double robotError = targetAngle - gyro.getIntegratedZValue();
+    public double getError(double angle) {
+        double robotError = angle - (double) angles.firstAngle;
         while (robotError > 180) robotError -= 360;
         while (robotError <= -180) robotError += 360;
         return robotError;
@@ -356,7 +361,7 @@ public class AutoPathController {
         double xPos = 0;
         double yPos = 0;
 
-        for (double[] entry : localizer.history.getHistory()) {
+        for (double[] entry : localizer.locationHistory.getHistory()) {
             rot += entry[0];
             xPos += entry[1];
             yPos += entry[2];
@@ -367,18 +372,36 @@ public class AutoPathController {
 
     /**
      * returns desired steering force.  +/- 1 range.  +ve = steer left
-     * @param xMov   X Movement being verified
-     * @param yMov   Y Movement being verified
+     * @param forwardMovement   forward movement being verified
      * @return
      */
-    public boolean verifyMovement(double xMov, double yMov) {
+    public boolean verifyMovement(double forwardMovement) {
+        double xMov = 0.0;
+        double yMov = 0.0;
         double[] position = getCurrentLocation();
-        if ((position[1] + xMov) > FIELD_WIDTH_CM) {
-            return false;
-        } else if ((position[2] + yMov) > FIELD_HEIGHT_CM) {
+
+        if ((position[2] % 90) == 0) {
+            // Moves in one direction
+        } else {
+            xMov = Math.cos(position[2]) * forwardMovement;
+            yMov = Math.sin(position[2]) * forwardMovement;
+
+
+        }
+        if ((position[1] + xMov) > LocationHistory.FIELD_WIDTH_CM || (position[2] + yMov) > LocationHistory.FIELD_HEIGHT_CM) {
             return false;
         }
 
         return true;
     }
+
+    public String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    public String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public LocationHistory getHistory() { return localizer.locationHistory; };
 }

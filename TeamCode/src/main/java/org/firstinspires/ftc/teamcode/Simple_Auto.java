@@ -10,7 +10,6 @@ public class Simple_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         this.pathController = new AutoPathController(
-                false,
                 hardwareMap,
                 "frontLeft",
                 "frontRight",
@@ -20,7 +19,7 @@ public class Simple_Auto extends LinearOpMode {
                 90
         );
 
-        pathController.initializeHardware();
+        pathController.initHardware();
 
         waitForStart();
         if (opModeIsActive()) {
@@ -28,6 +27,8 @@ public class Simple_Auto extends LinearOpMode {
             pathController.setZeroPowerBehavior();
 
             while (opModeIsActive()) {
+                pathController.update();
+
                 // Drive forward 20 cm
                 pathController.drive(20, 20, 5);
 
