@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Controls gets information from the gamepad and performs calculations in order
@@ -10,19 +11,22 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  */
 public class Controls {
     Gamepad gamepad;
+    Telemetry telemetry;
 
-    static final double dpad_power = 1.0;
+    static final double DPAD_POWER = 1.0;
+    static final double SPINNER_POWER = 0.4;
 
     double left_front_power, right_front_power, left_back_power, right_back_power;
     double spinner_power;
 
-    public Controls(Gamepad gamepad) {
+    public Controls(Gamepad gamepad, Telemetry telemetry) {
         this.gamepad = gamepad;
+        this.telemetry = telemetry;
 
-        this.left_front_power = 0;
-        this.right_front_power = 0;
-        this.left_back_power = 0;
-        this.right_back_power = 0;
+        left_front_power = 0;
+        right_front_power = 0;
+        left_back_power = 0;
+        right_back_power = 0;
     }
 
     public double getLeftFrontPower() { return left_front_power; };
@@ -42,9 +46,9 @@ public class Controls {
 
     private void updateSpinner() {
         if (gamepad.a) {
-            spinner_power = (float)0.95;
+            spinner_power = (float)SPINNER_POWER;
         } else if (gamepad.b) {
-            spinner_power = (float)-0.95;
+            spinner_power = (float)-SPINNER_POWER;
         } else {
             spinner_power = (float)0;
         }
@@ -56,23 +60,23 @@ public class Controls {
         float clockwise = gamepad.right_stick_x;
 
         if (gamepad.dpad_right) {
-            x = (float)dpad_power;
+            x = (float)DPAD_POWER;
             y = 0;
         }
 
         if (gamepad.dpad_left) {
-            x = -(float)dpad_power;
+            x = -(float)DPAD_POWER;
             y = 0;
         }
 
         if (gamepad.dpad_up) {
             x = 0;
-            y = -(float)dpad_power;
+            y = -(float)DPAD_POWER;
         }
 
         if (gamepad.dpad_down) {
             x = 0;
-            y = (float)dpad_power;
+            y = (float)DPAD_POWER;
         }
 
         // first operator is strafe direction, second operator is turn direction

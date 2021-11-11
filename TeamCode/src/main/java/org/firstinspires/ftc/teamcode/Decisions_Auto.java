@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Decisions Auto", group="Autos")
+@Autonomous(name="Decisions auto", group="Autos")
 public class Decisions_Auto extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
@@ -19,14 +19,16 @@ public class Decisions_Auto extends LinearOpMode {
                 "backLeft",
                 "backRight",
                 "blueBottom",
-                90
+                90,
+                telemetry
         );
 
         pathController.initHardware();
 
         fxMotors = new FxMotors(
             hardwareMap,
-            "CarouselSpinner"
+            "CarouselSpinner",
+                telemetry
         );
 
         // ATM, Decisions (TFLite and Vuforia) vs OpenCV is either-or
@@ -40,7 +42,7 @@ public class Decisions_Auto extends LinearOpMode {
             while (opModeIsActive()) {
                 pathController.update();
 
-                double[] previousCoords = pathController.getHistory().getPreviousCoordinate();
+                double[] previousCoords = pathController.getHistory().getPreviousCoords();
                 if (decisions.idealCoords(previousCoords)) {
                     duckRegion = decisions.getDecision(previousCoords);
                 }

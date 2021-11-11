@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -25,6 +26,7 @@ import java.util.Locale;
 public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;
 
+    Telemetry telemetry;
     Localizer localizer;
 
     // https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/bosch/BNO055IMUImpl.html
@@ -32,7 +34,7 @@ public class AutoPathController {
     Orientation angles;
     Acceleration gravity;
 
-    // Orientation relative to signingthe top of the field.
+    // Orientation relative to signing the top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
     double currentAngle;
 
@@ -58,16 +60,21 @@ public class AutoPathController {
             String left_back_name,
             String right_back_name,
             String setupPosition,
-            double setupAngle
+            double setupAngle,
+            Telemetry telemetry
     ) {
         initIMU(hardwareMap);
 
-        this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
-        this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
-        this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
-        this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
+        left_front = hardwareMap.get(DcMotor.class, left_front_name);
+        right_front = hardwareMap.get(DcMotor.class, right_front_name);
+        left_back = hardwareMap.get(DcMotor.class, left_back_name);
+        right_back = hardwareMap.get(DcMotor.class, right_back_name);
 
-        localizer = new Localizer(setupPosition);
+        right_front.setDirection(DcMotor.Direction.REVERSE);
+        right_back.setDirection(DcMotor.Direction.REVERSE);
+
+        localizer = new Localizer(setupPosition, telemetry);
+        this.telemetry = telemetry;
         
         currentAngle = setupAngle;
     }
@@ -180,7 +187,7 @@ public class AutoPathController {
                 left_back.isBusy() &&
                 right_back.isBusy() &&
                 runtime.seconds() < timeoutS) {
-
+            telemetry.addLine("Encoder driving...");
         }
 
         setZeroPower();
@@ -188,14 +195,14 @@ public class AutoPathController {
 
         // Append to history (if it is straightline)
         if (leftCM > 0 && leftCM == rightCM) {
-            double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
+            double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
             double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
             double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
             double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
             localizer.locationHistory.pushCoords(coordinateEntry);
         } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
             // Not recommended for rotation, instead use @rotate with a relative angle.
-            double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
+            double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
             // Find out how to determine rotation angle from leftCM and rightCM
             double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
             localizer.locationHistory.pushCoords(coordinateEntry);
@@ -230,10 +237,11 @@ public class AutoPathController {
         double rightSpeed;
 
         int moveCounts = (int)(distance * PULSES_PER_CM);
-        int newFrontLeftTarget = left_front.getCurrentPosition() + moveCounts;
-        int newFrontRightTarget = right_front.getCurrentPosition() + moveCounts;
-        int newBackLeftTarget = left_back.getCurrentPosition() + moveCounts;
-        int newBackRightTarget = right_back.getCurrentPosition() + moveCounts;
+        // Minus because it defaulted backwards, LOOK INTO THIS
+        int newFrontLeftTarget = left_front.getCurrentPosition() - moveCounts;
+        int newFrontRightTarget = right_front.getCurrentPosition() - moveCounts;
+        int newBackLeftTarget = left_back.getCurrentPosition() - moveCounts;
+        int newBackRightTarget = right_back.getCurrentPosition() - moveCounts;
 
         // This will set the target position and allow the motors to travel to that distance.
         left_front.setTargetPosition(newFrontLeftTarget);
@@ -243,38 +251,37 @@ public class AutoPathController {
 
         setRunToPosition();
 
-        double speed = Range.clip(Math.abs(AUTO_DRIVE_SPEED), 0.0, 1.0);
-        setLeftAndRightPower(speed, speed);
+        setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
 
-        while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
-            error = getError(currentAngle);
-            steer = getSteer(error, P_DRIVE_COEFF);
-
-            if (distance < 0)
-                steer *= -1.0;
-
-            leftSpeed = speed - steer;
-            rightSpeed = speed + steer;
-
-            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-            if (max > 1.0)
-            {
-                leftSpeed /= max;
-                rightSpeed /= max;
-            }
-
-            setLeftAndRightPower(leftSpeed, rightSpeed);
-        }
+//        while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
+//            error = getError(currentAngle);
+//            steer = getSteer(error, P_DRIVE_COEFF);
+//
+//            if (distance < 0)
+//                steer *= -1.0;
+//
+//            leftSpeed = AUTO_DRIVE_SPEED - steer;
+//            rightSpeed = AUTO_DRIVE_SPEED + steer;
+//
+//            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+//            if (max > 1.0) {
+//                leftSpeed /= max;
+//                rightSpeed /= max;
+//            }
+//
+//            setLeftAndRightPower(leftSpeed, rightSpeed);
+//        }
 
         setZeroPower();
         setRunUsingEncoder();
 
         // Append to history
-        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
-        double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
-        double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
-        double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-        localizer.locationHistory.pushCoords(coordinateEntry);
+//        telemetry.addData("history: ", localizer.locationHistory.toString());
+//        double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
+//        double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
+//        double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
+//        double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
+//        localizer.locationHistory.pushCoords(coordinateEntry);
     }
 
     /**
@@ -285,10 +292,12 @@ public class AutoPathController {
      *                   If a relative angle is required, add/subtract from current heading.
      */
     public void gyroTurn(double relativeAngle) {
-        while (!onHeading(currentAngle)) {}
+        while (!onHeading(currentAngle)) {
+            telemetry.addData("Updating... from", currentAngle);
+        }
 
         currentAngle += relativeAngle;
-        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
+        double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
         double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
         localizer.locationHistory.pushCoords(coordinateEntry);
     }

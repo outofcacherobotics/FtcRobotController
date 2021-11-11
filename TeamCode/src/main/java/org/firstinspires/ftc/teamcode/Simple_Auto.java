@@ -17,14 +17,16 @@ public class Simple_Auto extends LinearOpMode {
                 "backLeft",
                 "backRight",
                 "blueBottom",
-                90
+                90,
+                telemetry
         );
 
         pathController.initHardware();
 
         fxMotors = new FxMotors(
                 hardwareMap,
-                "CarouselSpinner"
+                "CarouselSpinner",
+                telemetry
         );
 
         waitForStart();
