@@ -33,10 +33,11 @@ public class Simple_Auto extends LinearOpMode {
             pathController.setZeroPowerBehavior();
 
             while (opModeIsActive()) {
-                pathController.update();
+                pathController.updateIMUHeading();
 
                 // Drive forward 20 cm
                 pathController.gyroDrive(20);
+                pathController.gyroTurnWithUnits(20);
 
                 telemetry.update();
             }

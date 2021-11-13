@@ -21,7 +21,12 @@ import java.util.Locale;
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
  * where a predefined path needs to be executed.
+ *
+ * Gyro docs:
+ * https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/modernrobotics/ModernRoboticsI2cGyro.html
+ * https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/bosch/BNO055IMUImpl.html
  */
+
 public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;
 
@@ -32,7 +37,7 @@ public class AutoPathController {
     Orientation angles;
     Acceleration gravity;
 
-    // Orientation relative to signingthe top of the field.
+    // Orientation relative to signing the top of the field.
     // https://github.com/acmerobotics/road-runner/blob/master/gui/src/main/resources/field.png
     double currentAngle;
 
@@ -45,6 +50,7 @@ public class AutoPathController {
     static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
+    static final double DAMPING_CONSTANT = 0.885;
 
     // Motor encoder configuration constants
     static final double PULSES_PER_REVOLUTION = 384.5;
@@ -72,7 +78,7 @@ public class AutoPathController {
         currentAngle = setupAngle;
     }
 
-    public void update() {
+    public void updateIMUHeading() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         gravity = imu.getGravity();
     }
@@ -157,7 +163,7 @@ public class AutoPathController {
      * @param leftCM   Distance (in cm) to move right motors from current position.
      */
     public void drive(double rightCM, double leftCM, double timeoutS) {
-        // For now, only straightline allowed
+        // For now, only straight line movement allowed
         int leftCounts = (int) (leftCM * PULSES_PER_CM);
         int rightCounts = (int) (rightCM * PULSES_PER_CM);
 
@@ -221,6 +227,7 @@ public class AutoPathController {
      * @param distance   Distance (in cm) to move forward from current position.
      */
     public void gyroDrive(double distance) {
+        distance /= DAMPING_CONSTANT;
         verifyMovement(distance);
 
         double max;
@@ -243,27 +250,26 @@ public class AutoPathController {
 
         setRunToPosition();
 
-        double speed = Range.clip(Math.abs(AUTO_DRIVE_SPEED), 0.0, 1.0);
-        setLeftAndRightPower(speed, speed);
+        setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
 
         while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
-            error = getError(currentAngle);
-            steer = getSteer(error, P_DRIVE_COEFF);
-
-            if (distance < 0)
-                steer *= -1.0;
-
-            leftSpeed = speed - steer;
-            rightSpeed = speed + steer;
-
-            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-            if (max > 1.0)
-            {
-                leftSpeed /= max;
-                rightSpeed /= max;
-            }
-
-            setLeftAndRightPower(leftSpeed, rightSpeed);
+//            error = getError(currentAngle);
+//            steer = getSteer(error, P_DRIVE_COEFF);
+//
+//            if (distance < 0)
+//                steer *= -1.0;
+//
+//            leftSpeed = AUTO_DRIVE_SPEED - steer;
+//            rightSpeed = AUTO_DRIVE_SPEED + steer;
+//
+//            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+//            if (max > 1.0) {
+//                leftSpeed /= max;
+//                rightSpeed /= max;
+//            }
+//
+//            setLeftAndRightPower(leftSpeed, rightSpeed);
+            setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
         }
 
         setZeroPower();
@@ -285,12 +291,21 @@ public class AutoPathController {
      *                   If a relative angle is required, add/subtract from current heading.
      */
     public void gyroTurn(double relativeAngle) {
-        while (!onHeading(currentAngle)) {}
+        // For now, without a Gyro, this is done for.
+//        while (!onHeading(currentAngle)) {}
+//
+//        currentAngle += relativeAngle;
+//        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
+//        double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
+//        localizer.locationHistory.pushCoords(coordinateEntry);
 
-        currentAngle += relativeAngle;
-        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
-        double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
-        localizer.locationHistory.pushCoords(coordinateEntry);
+        double distance = 0.0;
+        distance /= DAMPING_CONSTANT;
+    }
+
+    public void gyroTurnWithUnits(double distance) {
+        distance /= DAMPING_CONSTANT;
+        setLeftAndRightPower(distance, -distance);
     }
 
     /**
