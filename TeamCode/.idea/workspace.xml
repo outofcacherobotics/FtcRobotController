@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="287b51f1-4c13-44b9-9875-e26ed92fa7d8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/AutoPathController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/AutoPathController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Decisions_Auto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Decisions_Auto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Drivetrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Drivetrain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Simple_Auto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/firstinspires/ftc/teamcode/Simple_Auto.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

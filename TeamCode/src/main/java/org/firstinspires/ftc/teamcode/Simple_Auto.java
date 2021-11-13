@@ -37,7 +37,8 @@ public class Simple_Auto extends LinearOpMode {
             pathController.update();
 
             // Drive forward 20 cm
-            pathController.gyroDrive(60);
+//            pathController.drive(60);
+            pathController.rotateWithUnits(20);
 
             telemetry.update();
         }

@@ -47,6 +47,7 @@ public class AutoPathController {
     static final double     HEADING_THRESHOLD       = 1 ;      // As tight as we can make it with an integer gyro
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
+    static final double DAMPING_CONSTANT = 0.885;
 
     // Motor encoder configuration constants
     static final double PULSES_PER_REVOLUTION = 384.5;
@@ -113,16 +114,6 @@ public class AutoPathController {
         setRunUsingEncoder();
     }
 
-    public void initHardwareWithGyro() {
-        setStopAndResetEncoder();
-
-//        gyro.calibrate();
-
-        setRunUsingEncoder();
-
-//        gyro.resetZAxisIntegrator();
-    }
-
     public void setStopAndResetEncoder() {
         // Stop to reset encoders and calibrate gyro
         left_front.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -165,7 +156,10 @@ public class AutoPathController {
      * @param rightCM   Distance (in cm) to move left motors from current position.
      * @param leftCM   Distance (in cm) to move right motors from current position.
      */
-    public void drive(double rightCM, double leftCM, double timeoutS) {
+    public void drive(double rightCM, double leftCM) {
+        leftCM /= DAMPING_CONSTANT;
+        rightCM /= DAMPING_CONSTANT;
+
         // For now, only straightline allowed
         int leftCounts = (int) (leftCM * PULSES_PER_CM);
         int rightCounts = (int) (rightCM * PULSES_PER_CM);
@@ -181,34 +175,33 @@ public class AutoPathController {
         right_back.setTargetPosition(newBackRightTarget);
 
         setRunToPosition();
-        runtime.reset();
+//        runtime.reset();
         setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
 
         while (left_front.isBusy() &&
                 right_front.isBusy() &&
                 left_back.isBusy() &&
-                right_back.isBusy() &&
-                runtime.seconds() < timeoutS) {
-            telemetry.addLine("Encoder driving...");
+                right_back.isBusy()) {
+            setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
         }
 
         setZeroPower();
         setRunUsingEncoder();
 
         // Append to history (if it is straightline)
-        if (leftCM > 0 && leftCM == rightCM) {
-            double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
-            double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
-            double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
-            double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
-            localizer.locationHistory.pushCoords(coordinateEntry);
-        } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
-            // Not recommended for rotation, instead use @rotate with a relative angle.
-            double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
-            // Find out how to determine rotation angle from leftCM and rightCM
-            double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
-            localizer.locationHistory.pushCoords(coordinateEntry);
-        }
+//        if (leftCM > 0 && leftCM == rightCM) {
+//            double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
+//            double xMoved = previousCoordinate[1] + (leftCM * Math.cos(currentAngle));
+//            double yMoved = previousCoordinate[2] + (leftCM * Math.sin(currentAngle));
+//            double[] coordinateEntry = { previousCoordinate[0], xMoved, yMoved };
+//            localizer.locationHistory.pushCoords(coordinateEntry);
+//        } else if (Math.abs(leftCM) == Math.abs(rightCM) && leftCM > 0 && rightCM < 0) {
+//            // Not recommended for rotation, instead use @rotate with a relative angle.
+//            double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
+//            // Find out how to determine rotation angle from leftCM and rightCM
+//            double[] coordinateEntry = { previousCoordinate[0], previousCoordinate[1], previousCoordinate[2] };
+//            localizer.locationHistory.pushCoords(coordinateEntry);
+//        }
     }
 
     /**
@@ -221,7 +214,13 @@ public class AutoPathController {
         // Convert angle to inches
         double left = 0.0;
         double right = 0.0;
-        drive(left, right, 4.0);
+        drive(left, right);
+    }
+
+    // Positive distance turns left
+    public void rotateWithUnits(double distance) {
+        distance /= DAMPING_CONSTANT;
+        drive(distance, -distance);
     }
 
     /**
@@ -230,6 +229,7 @@ public class AutoPathController {
      * @param distance   Distance (in cm) to move forward from current position.
      */
     public void gyroDrive(double distance) {
+        distance /= DAMPING_CONSTANT;
         verifyMovement(distance);
 
         double max;
@@ -255,22 +255,23 @@ public class AutoPathController {
         setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
 
         while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
-            error = getError(currentAngle);
-            steer = getSteer(error, P_DRIVE_COEFF);
-
-            if (distance < 0)
-                steer *= -1.0;
-
-            leftSpeed = AUTO_DRIVE_SPEED - steer;
-            rightSpeed = AUTO_DRIVE_SPEED + steer;
-
-            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
-            if (max > 1.0) {
-                leftSpeed /= max;
-                rightSpeed /= max;
-            }
-
-            setLeftAndRightPower(leftSpeed, rightSpeed);
+//            error = getError(currentAngle);
+//            steer = getSteer(error, P_DRIVE_COEFF);
+//
+//            if (distance < 0)
+//                steer *= -1.0;
+//
+//            leftSpeed = AUTO_DRIVE_SPEED - steer;
+//            rightSpeed = AUTO_DRIVE_SPEED + steer;
+//
+//            max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+//            if (max > 1.0) {
+//                leftSpeed /= max;
+//                rightSpeed /= max;
+//            }
+//
+//            setLeftAndRightPower(leftSpeed, rightSpeed);
+            setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
         }
 
         setZeroPower();
@@ -279,7 +280,6 @@ public class AutoPathController {
         // Append to history
         // Look into sending this into another thread,
         // takes too long and has potential to error out.
-//        telemetry.addData("history: ", localizer.locationHistory.toString());
 //        double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
 //        double xMoved = previousCoordinate[1] + (distance * Math.cos(currentAngle));
 //        double yMoved = previousCoordinate[2] + (distance * Math.sin(currentAngle));
