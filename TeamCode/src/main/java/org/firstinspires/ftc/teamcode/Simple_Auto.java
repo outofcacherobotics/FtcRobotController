@@ -38,7 +38,7 @@ public class Simple_Auto extends LinearOpMode {
 
             // Drive forward 20 cm
 //            pathController.drive(60);
-            pathController.rotateWithUnits(20);
+            pathController.rotate(45);
 
             telemetry.update();
         }

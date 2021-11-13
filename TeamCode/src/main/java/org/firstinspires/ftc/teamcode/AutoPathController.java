@@ -48,6 +48,7 @@ public class AutoPathController {
     static final double     P_TURN_COEFF            = 0.1;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_COEFF           = 0.15;     // Larger is more responsive, but also less stable
     static final double DAMPING_CONSTANT = 0.885;
+    static final double DISTANCE_TO_ANGLE_CONSTANT = 2.25;
 
     // Motor encoder configuration constants
     static final double PULSES_PER_REVOLUTION = 384.5;
@@ -210,17 +211,9 @@ public class AutoPathController {
      * @param relativeAngle Angle relative to currentAngle that robot is to turn.
      */
     public void rotate(double relativeAngle) {
-        // NOT IMPLEMENTED
         // Convert angle to inches
-        double left = 0.0;
-        double right = 0.0;
-        drive(left, right);
-    }
-
-    // Positive distance turns left
-    public void rotateWithUnits(double distance) {
-        distance /= DAMPING_CONSTANT;
-        drive(distance, -distance);
+        double calibrated = relativeAngle / DISTANCE_TO_ANGLE_CONSTANT;
+        drive(calibrated, -calibrated);
     }
 
     /**
