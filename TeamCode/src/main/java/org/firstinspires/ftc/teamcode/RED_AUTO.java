@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Simple Auto", group="Autos")
-public class Simple_Auto extends LinearOpMode {
+@Autonomous(name="Red Auto", group="Autos")
+public class RED_AUTO extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
 
@@ -43,6 +43,7 @@ public class Simple_Auto extends LinearOpMode {
 //            pathController.drive(60);
             // left positive, right negative
 
+            pathController.rotate(-90);
             // forward 60
             pathController.gyroDrive(60);
             // right 90

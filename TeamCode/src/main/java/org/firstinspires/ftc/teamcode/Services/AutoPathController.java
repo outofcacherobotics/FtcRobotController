@@ -1,21 +1,15 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Services;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.firstinspires.ftc.teamcode.Localizer;
+import org.firstinspires.ftc.teamcode.LocationHistory;
 
 import java.util.Locale;
 
@@ -155,7 +149,7 @@ public class AutoPathController {
     }
 
     /**
-     *  Method to drive with both motor distances as params.
+     *  Method to drive with a gyro disabled.
      *
      * @param rightCM   Distance (in cm) to move left motors from current position.
      * @param leftCM   Distance (in cm) to move right motors from current position.
@@ -212,7 +206,7 @@ public class AutoPathController {
     }
 
     /**
-     *  Method to rotate without a gyro.
+     *  Method to drive with a gyro enabled.
      *
      * @param relativeAngle Angle relative to currentAngle that robot is to turn.
      */

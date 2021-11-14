@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.AutoPathController;
+import org.firstinspires.ftc.teamcode.FxMotors;
 
 @Autonomous(name="Simple Auto", group="Autos")
-public class Simple_Auto extends LinearOpMode {
+public class Blue_Auto extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
 

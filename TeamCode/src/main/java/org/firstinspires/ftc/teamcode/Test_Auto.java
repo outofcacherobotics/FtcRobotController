@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Simple Auto", group="Autos")
-public class Simple_Auto extends LinearOpMode {
+@Autonomous(name="Test Auto", group="Autos")
+public class Test_Auto extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
 
@@ -40,27 +40,18 @@ public class Simple_Auto extends LinearOpMode {
             pathController.update();
 
             // Drive forward 20 cm
-//            pathController.drive(60);
+            pathController.drive(60, 60);
             // left positive, right negative
 
-            // forward 60
-            pathController.gyroDrive(60);
-            // right 90
-            pathController.rotate(180);
-            // spin spinner for 3 seconds
-            fxMotors.spinFor(5);
-            // left 180
-            pathController.rotate(-90);
-            // forward 60
-            pathController.gyroDrive(60);
-            // backward 60
-            pathController.gyroDrive(-60);
-            pathController.rotate(90);
             pathController.gyroDrive(120);
-            pathController.rotate(-90);
-            pathController.gyroDrive(60);
-            pathController.rotate(-90);
-            pathController.gyroDrive(120);
+//            try {
+//                pathController.rotate(90);
+//                Thread.sleep(3000);
+//                pathController.rotate(90);
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
             telemetry.update();
         }

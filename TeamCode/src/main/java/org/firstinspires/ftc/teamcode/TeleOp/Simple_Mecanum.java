@@ -1,7 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.teamcode.Controls;
+import org.firstinspires.ftc.teamcode.Drivetrain;
+import org.firstinspires.ftc.teamcode.FxMotors;
 
 @TeleOp
 public class Simple_Mecanum extends LinearOpMode {

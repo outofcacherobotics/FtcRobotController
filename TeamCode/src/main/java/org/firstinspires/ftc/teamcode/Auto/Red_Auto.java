@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.AutoPathController;
+import org.firstinspires.ftc.teamcode.FxMotors;
 
-@Autonomous(name="Simple Auto", group="Autos")
-public class Simple_Auto extends LinearOpMode {
+@Autonomous(name="Red Auto", group="Autos")
+public class Red_Auto extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
 
@@ -43,6 +45,7 @@ public class Simple_Auto extends LinearOpMode {
 //            pathController.drive(60);
             // left positive, right negative
 
+            pathController.rotate(-90);
             // forward 60
             pathController.gyroDrive(60);
             // right 90
