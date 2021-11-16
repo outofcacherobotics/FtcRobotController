@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+//import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,24 +66,24 @@ public class Status {
 class StatusResponse {
     boolean running;
 
-    public boolean getRunning() { return running; };
+    public boolean getRunning() { return running; }
 }
 
 class StatusTest {
     @Test
     public void TestStartRobot() {
         Status status = new Status();
-        assertEquals(status.getRobotOn(), false);
+        assertFalse(status.getRobotOn());
         status.startRobot();
-        assertEquals(status.getRobotOn(), true);
+        assertTrue(status.getRobotOn());
     }
 
     @Test
     public void TestStopRobot() {
         Status status = new Status();
-        assertEquals(status.getRobotOn(), false);
+        assertFalse(status.getRobotOn());
         status.startRobot();
         status.startRobot();
-        assertEquals(status.getRobotOn(), false);
+        assertTrue(status.getRobotOn());
     }
 }
