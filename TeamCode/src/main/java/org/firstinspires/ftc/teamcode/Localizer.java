@@ -14,5 +14,5 @@ public class Localizer {
     public Localizer(String setupPosition, Telemetry telemetry) {
         this.telemetry = telemetry;
         locationHistory = new LocationHistory(setupPosition, telemetry);
-    };
+    }
 }

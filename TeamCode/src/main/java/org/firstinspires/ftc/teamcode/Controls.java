@@ -29,15 +29,15 @@ public class Controls {
         right_back_power = 0;
     }
 
-    public double getLeftFrontPower() { return left_front_power; };
+    public double getLeftFrontPower() { return left_front_power; }
 
-    public double getRightFrontPower() { return right_front_power; };
+    public double getRightFrontPower() { return right_front_power; }
 
-    public double getLeftBackPower() { return left_back_power; };
+    public double getLeftBackPower() { return left_back_power; }
 
-    public double getRightBackPower() { return right_back_power; };
+    public double getRightBackPower() { return right_back_power; }
 
-    public double getSpinnerPower() { return spinner_power; };
+    public double getSpinnerPower() { return spinner_power; }
 
     public void update() {
         updateSpinner();
