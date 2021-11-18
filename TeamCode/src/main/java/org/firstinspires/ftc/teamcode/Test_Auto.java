@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Simple Auto", group="Autos")
-public class Simple_Auto extends LinearOpMode {
+@Autonomous(name="Test Auto", group="Autos")
+public class Test_Auto extends LinearOpMode {
     AutoPathController pathController;
     FxMotors fxMotors;
 
@@ -37,12 +37,21 @@ public class Simple_Auto extends LinearOpMode {
             // Probably not necessary
             pathController.setZeroPowerBehavior();
 
-            while (opModeIsActive()) {
-                pathController.updateIMUHeading();
+            pathController.update();
 
-                // Drive forward 20 cm
-                pathController.gyroDrive(20);
-                pathController.gyroTurnWithUnits(20);
+            // Drive forward 20 cm
+            pathController.drive(60, 60);
+            // left positive, right negative
+
+            pathController.gyroDrive(120);
+//            try {
+//                pathController.rotate(90);
+//                Thread.sleep(3000);
+//                pathController.rotate(90);
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
             telemetry.update();
         }

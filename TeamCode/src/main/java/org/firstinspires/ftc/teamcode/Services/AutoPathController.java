@@ -1,33 +1,22 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Services;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.firstinspires.ftc.teamcode.Localizer;
+import org.firstinspires.ftc.teamcode.LocationHistory;
 
 import java.util.Locale;
 
 /**
  * AutoPathController is an abstraction of the drivetrain. Use this for Autos
  * where a predefined path needs to be executed.
- *
- * Gyro docs:
- * https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/modernrobotics/ModernRoboticsI2cGyro.html
- * https://first-tech-challenge.github.io/SkyStone/com/qualcomm/hardware/bosch/BNO055IMUImpl.html
  */
-
 public class AutoPathController {
     DcMotor left_front, right_front, left_back, right_back;
 
@@ -89,7 +78,7 @@ public class AutoPathController {
         currentAngle = setupAngle;
     }
 
-    public void updateIMUHeading() {
+    public void update() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         gravity = imu.getGravity();
         telemetry.addData("Angles: ", angles.toString());
@@ -160,13 +149,16 @@ public class AutoPathController {
     }
 
     /**
-     *  Method to drive with both motor distances as params.
+     *  Method to drive with a gyro disabled.
      *
      * @param rightCM   Distance (in cm) to move left motors from current position.
      * @param leftCM   Distance (in cm) to move right motors from current position.
      */
-    public void drive(double rightCM, double leftCM, double timeoutS) {
-        // For now, only straight line movement allowed
+    public void drive(double rightCM, double leftCM) {
+        leftCM /= LEFT_DAMPING_CONSTANT;
+        rightCM /= RIGHT_DAMPING_CONSTANT;
+
+        // For now, only straightline allowed
         int leftCounts = (int) (leftCM * PULSES_PER_CM);
         int rightCounts = (int) (rightCM * PULSES_PER_CM);
 
@@ -214,7 +206,7 @@ public class AutoPathController {
     }
 
     /**
-     *  Method to rotate without a gyro.
+     *  Method to drive with a gyro enabled.
      *
      * @param relativeAngle Angle relative to currentAngle that robot is to turn.
      */
@@ -253,15 +245,7 @@ public class AutoPathController {
         right_back.setTargetPosition(newBackRightTarget);
 
         setRunToPosition();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> 8b83cb67015849dfb430c1159af5c2e374e10b19
-        setLeftAndRightPower(AUTO_DRIVE_SPEED, AUTO_DRIVE_SPEED);
-=======
         setLeftAndRightPower(LEFT_DRIVE_SPEED, RIGHT_DRIVE_SPEED);
->>>>>>> 91f926c47c718f55b309a63fc1b9b27a2946c186
 
         while (left_front.isBusy() && right_front.isBusy() && left_back.isBusy() && right_back.isBusy()) {
 //            error = getError(currentAngle);
@@ -318,23 +302,6 @@ public class AutoPathController {
      *                   If a relative angle is required, add/subtract from current heading.
      */
     public void gyroTurn(double relativeAngle) {
-<<<<<<< HEAD
-        // For now, without a Gyro, this is done for.
-//        while (!onHeading(currentAngle)) {}
-//
-//        currentAngle += relativeAngle;
-//        double[] previousCoordinate = localizer.locationHistory.getPreviousCoordinate();
-//        double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
-//        localizer.locationHistory.pushCoords(coordinateEntry);
-
-        double distance = 0.0;
-        distance /= DAMPING_CONSTANT;
-    }
-
-    public void gyroTurnWithUnits(double distance) {
-        distance /= DAMPING_CONSTANT;
-        setLeftAndRightPower(distance, -distance);
-=======
         while (!onHeading(currentAngle)) {
             telemetry.addData("Updating... from", currentAngle);
         }
@@ -343,7 +310,6 @@ public class AutoPathController {
         double[] previousCoordinate = localizer.locationHistory.getPreviousCoords();
         double[] coordinateEntry = { relativeAngle, previousCoordinate[1], previousCoordinate[2] };
         localizer.locationHistory.pushCoords(coordinateEntry);
->>>>>>> 8b83cb67015849dfb430c1159af5c2e374e10b19
     }
 
     /**

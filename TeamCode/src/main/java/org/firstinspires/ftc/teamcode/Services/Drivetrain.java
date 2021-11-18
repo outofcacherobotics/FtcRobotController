@@ -1,12 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Services;
 
-//import android.location.Location;
-
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-//import java.util.Arrays;
+import org.firstinspires.ftc.teamcode.Localizer;
 
 /**
  * Drivetrain is an abstraction of the drivetrain. Use drivetrain to move around.
@@ -16,10 +13,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  * View HardwarePushbot for encoder use
  */
 public class Drivetrain {
-    DcMotor left_front;
-    DcMotor right_front;
-    DcMotor left_back;
-    DcMotor right_back;
+    DcMotor left_front = null;
+    DcMotor right_front = null;
+    DcMotor left_back = null;
+    DcMotor right_back = null;
 
     // History of movements, used by Localizer
     Localizer localizer;
@@ -77,20 +74,20 @@ public class Drivetrain {
     // Want to be able to correctly move the robot by distance instead of power output and time.
     // When that is achieved, rotation can be implemented along with distance.
 
-    public DcMotor getFrontLeftMotor() { return this.left_front; }
+    public DcMotor getFrontLeftMotor() { return this.left_front; };
 
-    public DcMotor getFrontRightMotor() { return this.right_front; }
+    public DcMotor getFrontRightMotor() { return this.right_front; };
 
-    public DcMotor getBackLeftMotor() { return this.left_back; }
+    public DcMotor getBackLeftMotor() { return this.left_back; };
 
-    public DcMotor getBackRightMotor() { return this.right_back; }
+    public DcMotor getBackRightMotor() { return this.right_back; };
 
-    public void directSetLeftFrontPower(double power) { this.left_front.setPower(power); }
+    public void directSetLeftFrontPower(double power) { this.left_front.setPower(power); };
 
-    public void directSetRightFrontPower(double power) { this.left_front.setPower(power); }
+    public void directSetRightFrontPower(double power) { this.left_front.setPower(power); };
 
-    public void directSetLeftBackPower(double power) { this.left_front.setPower(power); }
+    public void directSetLeftBackPower(double power) { this.left_front.setPower(power); };
 
-    public void directSetRightBackPower(double power) { this.left_front.setPower(power); }
+    public void directSetRightBackPower(double power) { this.left_front.setPower(power); };
 }
 

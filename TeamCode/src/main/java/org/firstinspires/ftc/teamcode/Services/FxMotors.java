@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Services;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
-//import org.apache.commons.lang3.concurrent.ThresholdCircuitBreaker;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
@@ -25,7 +24,7 @@ public class FxMotors {
 
     public void setSpinnerPower(double power) {
         spinner.setPower(power);
-    }
+    };
 
     public void spinFor(double seconds) {
         setSpinnerPower(0.6);
