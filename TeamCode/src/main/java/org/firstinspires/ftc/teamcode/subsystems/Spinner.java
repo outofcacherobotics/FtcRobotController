@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 /**
  * Class represents motors operating independently of drivetrain
  */
-public class FxMotors {
+public class Spinner {
     DcMotor spinner;
     Telemetry telemetry;
 
