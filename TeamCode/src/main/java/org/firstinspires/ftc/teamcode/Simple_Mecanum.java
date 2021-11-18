@@ -11,21 +11,24 @@ public class Simple_Mecanum extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        this.controls = new Controls(
-                gamepad1
+        controls = new Controls(
+                gamepad1,
+                telemetry
         );
 
-        this.drivetrain = new Drivetrain(
+        drivetrain = new Drivetrain(
                 hardwareMap,
                 "frontLeft",
                 "frontRight",
                 "backLeft",
-                "backRight"
+                "backRight",
+                telemetry
         );
 
-        this.fxMotors = new FxMotors(
+        fxMotors = new FxMotors(
                 hardwareMap,
-                "CarouselSpinner"
+                "CarouselSpinner",
+                telemetry
         );
 
         waitForStart();

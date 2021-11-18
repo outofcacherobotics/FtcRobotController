@@ -4,6 +4,7 @@ import android.location.Location;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Arrays;
 
@@ -15,10 +16,14 @@ import java.util.Arrays;
  * View HardwarePushbot for encoder use
  */
 public class Drivetrain {
-    DcMotor left_front, right_front, left_back, right_back;
+    DcMotor left_front = null;
+    DcMotor right_front = null;
+    DcMotor left_back = null;
+    DcMotor right_back = null;
 
     // History of movements, used by Localizer
-    LocationHistory history;
+    Localizer localizer;
+    Telemetry telemetry;
 
     double MAX_POWER = 1.0;
 
@@ -27,7 +32,8 @@ public class Drivetrain {
             String left_front_name,
             String right_front_name,
             String left_back_name,
-            String right_back_name
+            String right_back_name,
+            Telemetry telemetry
     ) {
         left_front = hardwareMap.get(DcMotor.class, left_front_name);
         right_front = hardwareMap.get(DcMotor.class, right_front_name);
@@ -36,6 +42,10 @@ public class Drivetrain {
 
         right_front.setDirection(DcMotor.Direction.REVERSE);
         right_back.setDirection(DcMotor.Direction.REVERSE);
+
+        setAllMotors(0, 0, 0, 0);
+
+        this.telemetry = telemetry;
 
         setZeroPowerBehavior();
     }
