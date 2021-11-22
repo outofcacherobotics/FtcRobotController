@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.*;
-import org.firstinspires.ftc.teamcode.Localizer;
-import org.firstinspires.ftc.teamcode.LocationHistory;
+import org.firstinspires.ftc.teamcode.Localization.Localizer;
+import org.firstinspires.ftc.teamcode.Localization.LocationHistory;
 
 import java.util.Locale;
 
