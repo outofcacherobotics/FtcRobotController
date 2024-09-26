@@ -2,25 +2,35 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Simple auto", group="Autos")
+@Autonomous(name="Simple Auto", group="Autos")
 public class Simple_Auto extends LinearOpMode {
-    private AutoPathController pathController;
+    AutoPathController pathController;
+    FxMotors fxMotors;
+
+    static final ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
-        this.pathController = new AutoPathController(
-                false,
+        pathController = new AutoPathController(
                 hardwareMap,
                 "frontLeft",
                 "frontRight",
                 "backLeft",
                 "backRight",
                 "blueBottom",
-                90
+                90,
+                telemetry
         );
 
-        pathController.initializeHardware();
+        pathController.initHardware();
+
+        fxMotors = new FxMotors(
+                hardwareMap,
+                "CarouselSpinner",
+                telemetry
+        );
 
         waitForStart();
         if (opModeIsActive()) {
@@ -28,11 +38,13 @@ public class Simple_Auto extends LinearOpMode {
             pathController.setZeroPowerBehavior();
 
             while (opModeIsActive()) {
-                // Drive forward 20 cm
-                pathController.drive(20, 20, 5);
+                pathController.updateIMUHeading();
 
-                telemetry.update();
-            }
+                // Drive forward 20 cm
+                pathController.gyroDrive(20);
+                pathController.gyroTurnWithUnits(20);
+
+            telemetry.update();
         }
     }
 }

@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Services;
 
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
-import java.util.Arrays;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Localizer;
 
 /**
  * Drivetrain is an abstraction of the drivetrain. Use drivetrain to move around.
@@ -13,19 +13,14 @@ import java.util.Arrays;
  * View HardwarePushbot for encoder use
  */
 public class Drivetrain {
-    DcMotor left_front, right_front, left_back, right_back;
+    DcMotor left_front = null;
+    DcMotor right_front = null;
+    DcMotor left_back = null;
+    DcMotor right_back = null;
 
     // History of movements, used by Localizer
-    double[][] history;
-
-    public double[][] getHistory() { return history; };
-
-    public double[] getLatestHistory() { return history[history.length - 1]; };
-
-    private void addToHistory(double[] newCoords) {
-        history = Arrays.copyOf(history, history.length + 1);
-        history[history.length - 1] = newCoords;
-    };
+    Localizer localizer;
+    Telemetry telemetry;
 
     double MAX_POWER = 1.0;
 
@@ -34,15 +29,20 @@ public class Drivetrain {
             String left_front_name,
             String right_front_name,
             String left_back_name,
-            String right_back_name
+            String right_back_name,
+            Telemetry telemetry
     ) {
-        this.left_front = hardwareMap.get(DcMotor.class, left_front_name);
-        this.right_front = hardwareMap.get(DcMotor.class, right_front_name);
-        this.left_back = hardwareMap.get(DcMotor.class, left_back_name);
-        this.right_back = hardwareMap.get(DcMotor.class, right_back_name);
+        left_front = hardwareMap.get(DcMotor.class, left_front_name);
+        right_front = hardwareMap.get(DcMotor.class, right_front_name);
+        left_back = hardwareMap.get(DcMotor.class, left_back_name);
+        right_back = hardwareMap.get(DcMotor.class, right_back_name);
 
-        this.right_front.setDirection(DcMotor.Direction.REVERSE);
-        this.right_back.setDirection(DcMotor.Direction.REVERSE);
+        right_front.setDirection(DcMotor.Direction.REVERSE);
+        right_back.setDirection(DcMotor.Direction.REVERSE);
+
+        setAllMotors(0, 0, 0, 0);
+
+        this.telemetry = telemetry;
 
         setZeroPowerBehavior();
     }
@@ -54,7 +54,7 @@ public class Drivetrain {
         right_back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    private boolean valid_power(double power) {
+    boolean valid_power(double power) {
         return 0 < power && power < MAX_POWER;
     }
 

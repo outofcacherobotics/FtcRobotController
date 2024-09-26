@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Localization;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,6 +15,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 * Docs
 * https://first-tech-challenge.github.io/SkyStone/org/firstinspires/ftc/robotcore/external/tfod/package-summary.html
  * https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Java-Sample-TensorFlow-Object-Detection-Op-Mode
+ *
+ * Initializes Vuforia and TensorFlow, judge positions of objects within arena
 */
 public class Decisions {
     private String teamColor = "blue"; // Figure out how to dynamically set
@@ -120,29 +122,19 @@ public class Decisions {
         return tfod.getUpdatedRecognitions();
     }
 
+    public boolean idealCoords(double[] currentCoords) {
+        return (Math.abs(currentCoords[0] - IDEAL_CAMERA_COORDS[0]) > POSITION_OFFSET ||
+                Math.abs(currentCoords[1] - IDEAL_CAMERA_COORDS[1]) > POSITION_OFFSET);
+    }
+
     /**
      * After in the right camera position on the field, call this to decide which spot the duck is in.
      */
-    public int getDecision(int[] currentCoordiates) {
+    public int getDecision(double[] currentCoordiates) {
         List<Recognition> updatedRecognitions = getTensorflowRecognitions();
-        /*
-            identify 3 objects - 1 duck, 2 non-duck
-            identify which object is the duck
-            return an integer ({0, 1, 2}) based on duck position
 
-            switch (getDecision()) {
-                case 0:
-                    // left
-                case 1:
-                    // middle
-                case 2:
-                    // right
-            }
-        */
-
-        // Check for acceptable currentCoordinates
-        if (Math.abs(currentCoordiates[0] - IDEAL_CAMERA_COORDS[0]) > POSITION_OFFSET ||
-                Math.abs(currentCoordiates[1] - IDEAL_CAMERA_COORDS[1]) > POSITION_OFFSET) {
+        // Check for acceptable coordinates
+        if (!idealCoords(currentCoordiates)) {
             return 0;
         }
         

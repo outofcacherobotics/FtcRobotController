@@ -6,9 +6,11 @@
 
  import androidx.annotation.NonNull;
 
+ import com.qualcomm.robotcore.hardware.HardwareMap;
  import com.qualcomm.robotcore.util.RobotLog;
 
  import org.firstinspires.ftc.robotcore.external.ClassFactory;
+ import org.firstinspires.ftc.robotcore.external.Telemetry;
  import org.firstinspires.ftc.robotcore.external.android.util.Size;
  import org.firstinspires.ftc.robotcore.external.function.Consumer;
  import org.firstinspires.ftc.robotcore.external.function.Continuation;
@@ -37,28 +39,30 @@
  /**
   * Docs
   * https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-an-External-Webcam-with-Control-Hub
+  * Initializes webcam
   */
  public class Webcam {
-     private static final String TAG = "Webcam Sample";
+     static final String TAG = "Webcam Sample";
+     Telemetry telemetry;
 
-     private static final int secondsPermissionTimeout = Integer.MAX_VALUE;
+     static final int secondsPermissionTimeout = Integer.MAX_VALUE;
 
      // Camera interaction state
-     private CameraManager cameraManager;
-     private WebcamName cameraName;
-     private Camera camera;
-     private CameraCaptureSession cameraCaptureSession;
+     CameraManager cameraManager;
+     WebcamName cameraName;
+     Camera camera;
+     CameraCaptureSession cameraCaptureSession;
 
      // Where frames are stored before being saved to disk
-     private EvictingBlockingQueue<Bitmap> frameQueue;
+     EvictingBlockingQueue<Bitmap> frameQueue;
 
      // Amount of bitmaps saved to disk
-     private int captureCounter = 0;
-     private File captureDirectory = AppUtil.ROBOT_DATA_DIR;
+     int captureCounter = 0;
+     File captureDirectory = AppUtil.ROBOT_DATA_DIR;
 
-     private Handler callbackHandler;
+     Handler callbackHandler;
 
-     public Webcam(String webcamName) {
+     public Webcam(HardwareMap hardwareMap, String webcamName) {
          callbackHandler = CallbackLooper.getDefault().getHandler();
 
          cameraManager = ClassFactory.getInstance().getCameraManager();
@@ -78,13 +82,9 @@
          return frameQueue.poll();
      }
 
-     public void saveFrame(Bitmap frame) {
+     public void onNewFrame(Bitmap frame) {
          saveBitmap(frame);
          frame.recycle();
-     }
-
-     public void getAndSaveFrame() {
-         return saveFrame(frameQueue.poll());
      }
 
      private void initializeFrameQueue(int capacity) {
@@ -132,42 +132,49 @@
 
          try {
              camera.createCaptureSession(Continuation.create(callbackHandler, new CameraCaptureSession.StateCallbackDefault() {
-                 @Override public void onConfigured(@NonNull CameraCaptureSession session) {
+                 @Override
+                 public void onConfigured(@NonNull CameraCaptureSession session) {
                      try {
+                         /** The session is ready to go. Start requesting frames */
                          final CameraCaptureRequest captureRequest = camera.createCaptureRequest(imageFormat, size, fps);
                          session.startCapture(captureRequest,
-                             new CameraCaptureSession.CaptureCallback() {
-                                 @Override public void onNewFrame(@NonNull CameraCaptureSession session, @NonNull CameraCaptureRequest request, @NonNull CameraFrame cameraFrame) {
-                                     Bitmap bmp = captureRequest.createEmptyBitmap();
-                                     cameraFrame.copyToBitmap(bmp);
-                                     frameQueue.offer(bmp);
-                                 }
-                             },
-                             Continuation.create(callbackHandler, new CameraCaptureSession.StatusCallback() {
-                                 @Override public void onCaptureSequenceCompleted(@NonNull CameraCaptureSession session, CameraCaptureSequenceId cameraCaptureSequenceId, long lastFrameNumber) {
-                                     // Logging
-                                 }
-                             })
+                                 new CameraCaptureSession.CaptureCallback() {
+                                     @Override public void onNewFrame(@NonNull CameraCaptureSession session, @NonNull CameraCaptureRequest request, @NonNull CameraFrame cameraFrame) {
+                                         /** A new frame is available. The frame data has <em>not</em> been copied for us, and we can only access it
+                                          * for the duration of the callback. So we copy here manually. */
+                                         Bitmap bmp = captureRequest.createEmptyBitmap();
+                                         cameraFrame.copyToBitmap(bmp);
+                                         frameQueue.offer(bmp);
+                                     }
+                                 },
+                                 Continuation.create(callbackHandler, new CameraCaptureSession.StatusCallback() {
+                                     @Override public void onCaptureSequenceCompleted(@NonNull CameraCaptureSession session, CameraCaptureSequenceId cameraCaptureSequenceId, long lastFrameNumber) {
+                                         RobotLog.ii(TAG, "capture sequence %s reports completed: lastFrame=%d", cameraCaptureSequenceId, lastFrameNumber);
+                                     }
+                                 })
                          );
                          synchronizer.finish(session);
                      } catch (CameraException|RuntimeException e) {
-                         error("exception starting camera");
+                         RobotLog.ee(TAG, e, "exception starting capture");
+                         error("exception starting capture");
                          session.close();
                          synchronizer.finish(null);
                      }
                  }
              }));
-
-             try {
-                 synchronizer.await();
-             }   catch (InterruptedException e) {
-                 Thread.currentThread().interrupt();
-             }
-
-             cameraCaptureSession = synchronizer.getValue();
-         } catch (Error err) {
-             return;
+         } catch (CameraException|RuntimeException e) {
+             RobotLog.ee(TAG, e, "exception starting camera");
+             error("exception starting capture");
+             synchronizer.finish(null);
          }
+
+         try {
+             synchronizer.await();
+         }   catch (InterruptedException e) {
+             Thread.currentThread().interrupt();
+         }
+
+         cameraCaptureSession = synchronizer.getValue();
      }
 
      private void stopCamera() {
@@ -188,7 +195,7 @@
 
      private void error(String msg) {
          telemetry.log().add(msg);
-         telemtry.update();
+         telemetry.update();
      }
 
      private void error(String format, Object...args) {

@@ -1,26 +1,37 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.teamcode.Controls;
+import org.firstinspires.ftc.teamcode.Drivetrain;
+import org.firstinspires.ftc.teamcode.FxMotors;
 
 @TeleOp
 public class Simple_Mecanum extends LinearOpMode {
-    private Drivetrain drivetrain;
-    private Controls controls;
+    Controls controls;
+    Drivetrain drivetrain;
+    FxMotors fxMotors;
 
     @Override
     public void runOpMode() {
-        this.drivetrain = new Drivetrain(
+        controls = new Controls(
+                gamepad1,
+                telemetry
+        );
+
+        drivetrain = new Drivetrain(
                 hardwareMap,
                 "frontLeft",
                 "frontRight",
                 "backLeft",
-                "backRight"
+                "backRight",
+                telemetry
         );
 
-        this.controls = new Controls(
-            gamepad1, 
-            "slowmode"
+        fxMotors = new FxMotors(
+                hardwareMap,
+                "CarouselSpinner",
+                telemetry
         );
 
         waitForStart();
@@ -37,6 +48,11 @@ public class Simple_Mecanum extends LinearOpMode {
                     controls.getRightBackPower()
                 );
 
+                fxMotors.setSpinnerPower(
+                        controls.getSpinnerPower()
+                );
+
+                telemetry.addData("Spinner power", controls.getSpinnerPower());
                 telemetry.update();
             }
         }
